@@ -31,17 +31,17 @@ public class KAnon
 
 		}
 
+		System.out.println("Processing File... Please wait.");
+		long millis = System.currentTimeMillis(); // Start run timer
 		KAnonMethods table = new KAnonMethods(importFile(new File(args[0])), input); //De
+
+		table.makeKAnon();
+		ArrayList<Tuple> output = table.getOutput();
+
 		if (table != null)
 			System.out.println("File successfully imported! Current K-Anonymous Value: "+table.getCurrentK());
 		else
 			return;
-
-		System.out.println("Processing File... Please wait.");
-		long millis = System.currentTimeMillis(); // Start run timer
-
-		table.makeKAnon();
-		ArrayList<Tuple> output = table.getOutput();
 
 		if (output != null) 
 		{

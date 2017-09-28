@@ -31,7 +31,8 @@ public class KAnonMethods
 	//Written by:	Moten
 	public void makeKAnon() //Main algorithm
 	{
-		if (evaluateKAnon(table) == k) //Check to see if table is already K-Anonymous
+		currentK = evaluateKAnon(table);
+		if (currentK == k) //Check to see if table is already K-Anonymous
 			return;
 
 		assignTaxonomy(table); //Assign the taxonomy trees for all tuples
@@ -66,16 +67,27 @@ public class KAnonMethods
 	{
 		int min = 10000000;
 		ArrayList<Integer> values = new ArrayList<Integer>();
+		ArrayList<Integer> occurence = new ArrayList<Integer>();
 		for (int i = 0; i < input.size(); i++)
 		{
 			Integer temp = input.get(i).getHash();
-			values.add(temp);
+			int location = values.indexOf(temp);
+			if (location == -1)
+			{
+				values.add(temp);
+				occurence.add(1);
+			}
+			else
+			{
+				occurence.set(location, occurence.get(location)+1);
+			}
+			
 		}
-		for (int i = 0; i < input.size(); i++) //This entire loop is fucking retarded Moten - Moten
+
+		for (int i = 0; i < occurence.size(); i++)
 		{
-			int x = Collections.frequency(values, values.get(i)); //This is what is causing the retarded run time <-----------------------
-			if (x<min)
-				min=x;
+			if (min > occurence.get(i))
+				min = occurence.get(i);
 		}
 
 		return min;
@@ -158,7 +170,7 @@ public class KAnonMethods
 	{
 		Scanner console;
 		ArrayList<TaxonomyTree> output = new ArrayList<TaxonomyTree>();
-		
+
 		return output;
 	}
 }

@@ -41,16 +41,16 @@ public class Tuple
 
 	//Preconditon: 	Tuple initialised
 	//Postcondtion:	Hash value for tuple returned
-	//Status:		Coded and mildly efficient
+	//Status:		Coded 
 	//Written by:	Moten
-	public int getHash()
+	public int getHash() //Not really a hash
 	{
 		String total = "";
 		int output = 0;
 		for (int i = 0; i < values.length; i++)
 			total += "$"+values[i]; 
 		for (int i = 0; i < total.length(); i++)
-			output = output*397 + (int)total.charAt(i);
+			output = output + (int)total.charAt(i);
 
 		return output;
 	}

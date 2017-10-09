@@ -5,17 +5,19 @@ public class Tuple
 	private String[] values;
 	private int size;
 	private long hash;
+	private final int id;
 
 	//Preconditon: 	Valid array list of string input
 	//Postcondtion:	Tuple initialised
 	//Status:		Coded and efficient
 	//Written by:	Moten
-	public Tuple(ArrayList<String> input)
+	public Tuple(ArrayList<String> input, int id)
 	{
 		size = input.size();
 		values = new String[size];
 		for (int i = 0; i < size; i++)
 			values[i] = input.get(i);
+		this.id = id;
 	}
 
 	//Preconditon: 	Tuple initialised
@@ -43,7 +45,7 @@ public class Tuple
 	//Postcondtion:	Hash value for tuple returned
 	//Status:		Coded 
 	//Written by:	Moten
-	public int getHash() //Not really a hash
+	public int getHash() //Gives inaccurate hashes
 	{
 		String total = "";
 		int output = 0;
@@ -54,4 +56,14 @@ public class Tuple
 
 		return output;
 	}
+
+	//Preconditon: 	Tuple initialised
+	//Postcondtion:	Tuple ID returned
+	//Status:		Coded and efficient
+	//Written by:	Moten
+	public int getID() //Gives inaccurate hashes
+	{		
+		return id;
+	}
+
 }

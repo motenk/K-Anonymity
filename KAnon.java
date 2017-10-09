@@ -68,6 +68,8 @@ public class KAnon
 	{
 		Scanner console;
 		ArrayList<Tuple> output = new ArrayList<Tuple>();
+		int id = 0;
+		
 		try //Attempt to import file
 		{
 			console = new Scanner(file); 
@@ -79,6 +81,7 @@ public class KAnon
 			System.out.println("Error importing file. Please try again.");
 			return null;
 		}
+
 		while(console.hasNextLine()) //Import file into data structure
 		{
 			ArrayList<String> tupleInput = new ArrayList<String>();
@@ -88,7 +91,8 @@ public class KAnon
 			{
 				tupleInput.add(lineInput.next());
 			}
-			output.add(new Tuple(tupleInput));
+			output.add(new Tuple(tupleInput, id));
+			id++;
 		}
 		return output;
 	}

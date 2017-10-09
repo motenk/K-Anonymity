@@ -32,6 +32,7 @@ public class KAnonMethods
 	public void makeKAnon() //Main algorithm
 	{
 		currentK = evaluateKAnon(table);
+
 		if (currentK == k) //Check to see if table is already K-Anonymous
 			return;
 
@@ -61,16 +62,16 @@ public class KAnonMethods
 
 	//Preconditon: 	KAnonMethods initialised
 	//Postcondtion:	Current K value of table returned
-	//Status:		Coded and super inefficient
+	//Status:		Work in Progress - Efficient at the moment but potentially inaccurate (to be improved)
 	//Written by:	Moten
-	private int evaluateKAnon(ArrayList<Tuple> input) //THIS REALLY NEEDS TO BE FUCKING IMPROVED (jesus)
+	private int evaluateKAnon(ArrayList<Tuple> input) // ~0.15 second runtime for 100000 records on dual core i5 @2.7Ghz
 	{
 		int min = 10000000;
 		ArrayList<Integer> values = new ArrayList<Integer>();
 		ArrayList<Integer> occurence = new ArrayList<Integer>();
 		for (int i = 0; i < input.size(); i++)
 		{
-			Integer temp = input.get(i).getHash();
+			Integer temp = input.get(i).getHash(); 
 			int location = values.indexOf(temp);
 			if (location == -1)
 			{
@@ -78,9 +79,7 @@ public class KAnonMethods
 				occurence.add(1);
 			}
 			else
-			{
 				occurence.set(location, occurence.get(location)+1);
-			}
 			
 		}
 
@@ -165,12 +164,33 @@ public class KAnonMethods
 	//Preconditon: 	KAnonMethods initialised
 	//Postcondtion:	Taxonomy trees are imported from file and returned
 	//Status:		Incomplete
-	//Written by:	Moten
-	private static ArrayList<TaxonomyTree> importTrees()
+	//Written by:	
+	private ArrayList<TaxonomyTree> importTrees()
 	{
 		Scanner console;
-		ArrayList<TaxonomyTree> output = new ArrayList<TaxonomyTree>();
+		ArrayList<TaxonomyTree> output = new ArrayList<TaxonomyTree>(); //Output arraylist of taxonomy trees. Each one relates to a field
+
 
 		return output;
+	}
+
+	//Preconditon: 	KAnonMethods initialised
+	//Postcondtion:	Average run time of method printed to console
+	//Status:		Coded
+	//Written by:	Moten
+	private void testTime()
+	{
+		long millis;
+		long totalTime = 0;
+		for (int i = 0; i < 100; i++)
+		{
+			millis = System.currentTimeMillis(); // Start run timer
+
+			evaluateKAnon(table); //METHOD TO BE TESTED
+
+			totalTime += System.currentTimeMillis()-millis;
+		}
+		totalTime = totalTime/100;
+		System.out.println("Average run time of evaluateKAnon: "+totalTime);
 	}
 }

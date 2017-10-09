@@ -39,19 +39,11 @@ employer:={government,non-government,none,?}
 	non-government:={private,self-emp-inc,self-emp-not-inc}
 	none:={never-worked,without-pay}
 $
- ?
- Adm-clerical
- Armed-Forces
- Craft-repair
- Exec-managerial
- Farming-fishing
- Handlers-cleaners
- Machine-op-inspct
- Other-service
- Priv-house-serv
- Prof-specialty
- Protective-serv
- Sales
- Tech-support
- Transport-moving
-job:={?}
+job:={manual-labour,professional,customer-service,government,other-service,?}
+	manual-labour:={skilled,unskilled}
+		skilled:={craft-repair,machine-op-inspct}
+		unskilled:={farming-fishing,handlers-cleaners,priv-house-serv,transport-moving}
+	professional:={exec-managerial,prof-specialty}
+	customer-service:={adm-clerical,sales,tech-support}
+	government:={armed-forces,protective-serv}
+$

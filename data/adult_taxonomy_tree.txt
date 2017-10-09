@@ -18,3 +18,40 @@ country:={asia,north-america,south-america,africa,europe,?}
 		central-europe:={france,germany,holand-netherlands}
 		southern-europe:={greece,italy,portugal}
 		eastern-europe:={hungary,poland,yugoslavia}
+$
+race:={amer-indian-eskimo,asian-pac-islander,black,white,other}
+$
+gender:={male,female}
+$
+marriage:={married,not-married}
+	married:={married-af-spouse,married-civ-spouse,married-spouse-absent,separated}
+	not-married:={divorced,widowed,never-married}
+$
+education:={pre-primary,pre-high-school,pre-university,pre-doctorate,post-doctorate}
+	pre-primary:={preschool,1st-4th,5th-6th}
+	pre-highschool:={7th-8th,9th,10th,11th,12th}
+	pre-university:={hs-grad,some-college}
+	pre-doctorate:={bachelors,masters}
+	post-doctorate:={prof-school,assoc-voc,doctorate,assoc-acdm}
+$
+employer:={government,non-government,none,?}
+	government:={federal-gov,local-gov,state-gov}
+	non-government:={private,self-emp-inc,self-emp-not-inc}
+	none:={never-worked,without-pay}
+$
+ ?
+ Adm-clerical
+ Armed-Forces
+ Craft-repair
+ Exec-managerial
+ Farming-fishing
+ Handlers-cleaners
+ Machine-op-inspct
+ Other-service
+ Priv-house-serv
+ Prof-specialty
+ Protective-serv
+ Sales
+ Tech-support
+ Transport-moving
+job:={?}

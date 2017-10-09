@@ -1,0 +1,95 @@
+{
+    "education": 
+    [
+            {
+                    "nodeId": "1",
+                    "nodeName": "secondary",
+                    "parentId": []
+            },
+            {
+                    "nodeId": "2",
+                    "name": "junior_sec.",
+                    "parentId": ["1"]
+            },
+            {
+                    "nodeId": "3",
+                    "name": "senior_sec.",
+                    "parentId": ["1"]
+            },
+            {
+                    "nodeId": "4",
+                    "name": "9th",
+                    "parentId": ["2"]
+            },
+            {
+                    "nodeId": "5",
+                    "name": "10th",
+                    "parentId": ["2"]
+            },
+            {
+                    "nodeId": "6",
+                    "name": "11th",
+                    "parentId": ["3"]
+            },
+            {
+                    "nodeId": "7",
+                    "name": "12th",
+                    "parentId": ["3"]
+            },
+            {
+                    "nodeId": "8",
+                    "nodeName": "university",
+                    "parentId": []
+            },
+            {
+                    "nodeId": "9",
+                    "name": "bachelors",
+                    "parentId": ["8"]
+            },
+            {
+                    "nodeId": "10",
+                    "name": "grad_school",
+                    "parentId": ["8"]
+            },
+            {
+                    "nodeId": "11",
+                    "name": "masters",
+                    "parentId": ["10"]
+            },
+            {
+                    "nodeId": "12",
+                    "name": "doctorate",
+                    "parentId": ["10"]
+            }
+    ],
+
+    "sex": 
+    [
+            {
+                    "nodeId": "1",
+                    "nodeName": "male",
+                    "parentId": []
+            },
+            {
+                    "nodeId": "2",
+                    "name": "female",
+                    "parentId": []
+            }
+    ]
+}
+
+* <- Break character so I can leave comments after the trees
+
+Numerical attributes will have their taxonomy trees generated automatically.
+
+
+Here's what the custom one looked like for reference:
+
+education:={secondary,university}
+	secondary:{junior_sec.,senior_sec.}
+		junior_sec.:{9th,10th}
+		senior_sec.:{11th,12th}
+	university:{bachelors,grad_school}
+		grad_school:{masters,doctorate}
+
+sex:={male,female}

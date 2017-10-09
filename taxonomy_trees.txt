@@ -14,9 +14,3 @@ $ <- Break character so I can leave comments after the trees
 
 Numerical attributes will have their taxonomy trees generated automatically.
 
-
-
-
-
-I know I said I was going to use JSON but it was a pain in terms of size of the trees. (Look at taxonomy_tree_old.txt)
-If you wanna redo it in JSON be my guest. - Moten

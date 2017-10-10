@@ -4,6 +4,7 @@ import table.Tuple;
 import taxonomy.TaxonomyTree;
 
 import java.util.*;
+import java.io.*;
 
 public class KAnonMethods
 {
@@ -167,14 +168,51 @@ public class KAnonMethods
 
 	//Preconditon: 	methods.KAnonMethods initialised
 	//Postcondtion:	Taxonomy trees are imported from file and returned
-	//Status:		Incomplete
-	//Written by:	
+	//Status:		Coded
+	//Written by:	Moten
 	private ArrayList<TaxonomyTree> importTrees()
 	{
 		Scanner console;
 		ArrayList<TaxonomyTree> output = new ArrayList<TaxonomyTree>(); //Output arraylist of taxonomy trees. Each one relates to a field
+		String id = "";
+		String input = "";
+		File file = new File("adult_taxonomy_tree.txt");
+		
+		try //Attempt to import file
+		{
+			console = new Scanner(file); 
 
+		}
+		catch (FileNotFoundException e)
+		{
+			System.out.println("Error importing file. Please try again.");
+			return null;
+		}
 
+		while(console.hasNextLine()) //Import file into data structure
+		{
+			Scanner line = new Scanner(console.nextLine());
+			line.useDelimiter(":");
+
+			if (line.hasNext())
+			{
+				id = line.next();
+				if (id.charAt(0) == '$')
+					break;
+				input = line.next();
+
+				id = id.replaceAll("\\s+","");
+				input = input.replaceAll("[{=}]","");
+				if (input.charAt(0) == '*')
+				{
+					output.add(new TaxonomyTree(id, input.substring(1)));
+				}
+				else
+				{
+					output.get(output.size()-1).addNode(id, input);
+				}
+			}
+		}
 		return output;
 	}
 

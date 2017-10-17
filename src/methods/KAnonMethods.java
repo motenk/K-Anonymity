@@ -8,6 +8,8 @@ import java.io.*;
 
 public class KAnonMethods
 {
+	private static final int TABLESIZE = 10007; 
+
 	private double dataLoss = 0;
 	private int size = 0;
 	private int k = 0;
@@ -67,31 +69,32 @@ public class KAnonMethods
 
 	//Preconditon: 	methods.KAnonMethods initialised
 	//Postcondtion:	Current K value of table returned
-	//Status:		Work in Progress - Efficient at the moment but potentially inaccurate (to be improved)
+	//Status:		Coded and mostly efficient. 
 	//Written by:	Moten
-	private int evaluateKAnon(ArrayList<Tuple> input) // ~0.15 second runtime for 100000 records on dual core i5 @2.7Ghz
+	private int evaluateKAnon(ArrayList<Tuple> input) 
 	{
 		int min = 10000000;
-		ArrayList<Integer> values = new ArrayList<Integer>();
-		ArrayList<Integer> occurence = new ArrayList<Integer>();
+		hashItem hashes[] = new hashItem[TABLESIZE];
 		for (int i = 0; i < input.size(); i++)
 		{
-			Integer temp = input.get(i).getHash(); 
-			int location = values.indexOf(temp);
-			if (location == -1)
-			{
-				values.add(temp);
-				occurence.add(1);
-			}
+			int hash = input.get(i).getHash();
+			hashItem temp = new hashItem(input.get(i).toString(), hash); 
+			if (hashes[hash] == null)
+				hashes[hash] = temp;
 			else
-				occurence.set(location, occurence.get(location)+1);
+				hashes[hash].addHash(temp);
+
 			
 		}
 
-		for (int i = 0; i < occurence.size(); i++)
+		for (int i = 0; i < TABLESIZE; i++)
 		{
-			if (min > occurence.get(i))
-				min = occurence.get(i);
+			if (hashes[i] != null)
+			{
+				int size = hashes[i].minSize();
+				if (min > size)
+					min = size;
+			}
 		}
 
 		return min;
@@ -233,6 +236,64 @@ public class KAnonMethods
 			totalTime += System.currentTimeMillis()-millis;
 		}
 		totalTime = totalTime/100;
-		System.out.println("Average run time of evaluateKAnon: "+totalTime);
+		System.out.println("Average run time of method in milliseconds: "+totalTime);
+	}
+
+
+	private class hashItem
+	{
+		private String value;
+		private int hash;
+		private hashItem next;
+		private int size;
+
+		private hashItem(String s, int in) {
+			value = s;
+			hash = in;
+			next = null;
+			size = 1;
+		}
+
+		private boolean matchName(String input) 
+		{
+			if (input.equals(value))
+				return true;
+			return false;
+		}
+
+		private boolean matchHash(int input)
+		{
+			if (input == hash)
+				return true;
+			return false;
+		}
+
+		public void addHash(hashItem input)
+		{
+			if (input.matchName(value))
+			{
+				size++;
+				return;
+			}
+			if (next == null)
+				next = input;
+			else
+				next.addHash(input);
+		}
+
+		public int minSize()
+		{
+			if (next == null)
+				return size;
+			int smaller = next.minSize();
+			if (smaller < size)
+				return smaller;
+			return size;
+		}
+
+		private hashItem getNext()
+		{
+			return next;
+		}
 	}
 }

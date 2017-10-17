@@ -6,6 +6,8 @@ import java.util.*;
 
 public class Tuple
 {
+	private static final int TABLESIZE = 10007; 
+
 	private String[] values;
 	private int size;
 	private long hash;
@@ -56,9 +58,9 @@ public class Tuple
 		for (int i = 0; i < values.length; i++)
 			total += "$"+values[i]; 
 		for (int i = 0; i < total.length(); i++)
-			output = output + (int)total.charAt(i);
+			output += (int)total.charAt(i);
 
-		return output;
+		return output%TABLESIZE;
 	}
 
 	//Preconditon: 	table.Tuple initialised

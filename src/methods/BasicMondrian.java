@@ -24,11 +24,16 @@ public class Mondrian{
 	}
 
 	private double getNormalisedWidth(Partition partition, int index){
+		double width;
 		if(!isCategorical[index]){
-			int lowBound = partition.getWidths()[index][0];
-			int highBound = partition.getWidths()[index][1];
+			int lowBoundIndex = partition.getWidths()[index][0];
+			int highBoundIndex = partition.getWidths()[index][1];
+			// width = highest number of the partition's range - the lowest number of the patition's range
 		}
-		return 0.0;
+		else{
+			width = partition.getWidths()[index][0];
+		}
+		// return width / range of the whole attribute - not just the partition;
 	}
 
 	private int chooseDimesion(Partition partition){
@@ -37,7 +42,7 @@ public class Mondrian{
 		for (int i = 0; i < numberOfColumns; i++) {
 			if(!partition.getSplittable()[i])
 				continue;
-			double normalWidth = getNormalisedWidth();
+			double normalWidth = getNormalisedWidth(partition, i);
 			if(normalWidth > maxWidth){
 				maxWidth = normalWidth;
 				maxDim = i;

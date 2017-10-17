@@ -14,15 +14,55 @@ public class Mondrian{
 	private ArrayList<Tuple> data;
 	private int[][] widths;
 	private ArrayList<Partition> result;
+	private ArrayList<ArrayList<Integer>> attributeRanges;
+	private ArrayList<TaxonomyTree> attributeTrees;
 
-	public Mondrian(Table input, int k){
+	//constructor
+	//data - the actual data - linkedlist of tuples
+	//k value - minimum equivalence class number
+	//numberOfColumns - number of attributes well be anonymising
+	//isCatagorical - boolean array, one boolean for each column, whether or not it is a categorical column
+	//widths - has a high and low index for the width of each attribute - needs an array of values all values in order...
+	public Mondrian(Table input, int k, ArrayList<TaxonomyTree> attributeTrees){
 		data = input.getData();
 		this.k = k;
 		numberOfColumns = data.get(0).getSize();
 		isCategorical = new boolean[numberOfColumns];
 		widths = new int[numberOfColumns][2];
+		this.attributeTrees = attributeTrees;
+		setRanges();
+		setWidths();
 	}
 
+	private void setRangesAndWidths(){
+		int maximumValue = 0;
+		for (int i = 0; i < numberOfColumns; i++) {
+			attributeRanges.add(new ArrayList<Integer>());
+			//if(notCatagorical){
+				for (int j = 0; j < data.size(); j++) {
+					int tempPotentialMax = Integer.parseInt(data.get(j).get(i));
+					if(tempPotentialMax > maximumValue)
+						maximumValue = tempPotentialMax;
+				}
+				for (int j = 0; j < maximumValue; j++) {
+					attributeRanges.get(i).add(j);
+				}
+				widths[i][0] = 0;
+				widths[i][1] = maximumValue;
+			//}
+			//else{
+				// maximumValue = recursive function to get number of leaf nodes
+				// attributeRanges.get(i).add(maximumValue)
+				// widths[i][0] = maximumValue;
+			//}
+		}
+	}
+
+	private void countLeafNodes(){
+		
+	}
+
+	//
 	private double getNormalisedWidth(Partition partition, int index){
 		double width;
 		if(!isCategorical[index]){
@@ -37,10 +77,10 @@ public class Mondrian{
 	}
 
 	private int chooseDimesion(Partition partition){
-		int maxWidth = -1;
+		double maxWidth = -1;
 		int maxDim = -1;
 		for (int i = 0; i < numberOfColumns; i++) {
-			if(!partition.getSplittable()[i])
+			if(partition.getSplittable()[i] != 1)
 				continue;
 			double normalWidth = getNormalisedWidth(partition, i);
 			if(normalWidth > maxWidth){
@@ -92,7 +132,7 @@ public class Mondrian{
 		return (sumOfSplittableArray == 0) ? false : true;
 	}
 
-	public void anonymise(Partition partition){
+	private void anonymise(Partition partition){
 		if(!checkSplittable(partition)){
 			result.add(partition);
 		}
@@ -118,12 +158,12 @@ public class Mondrian{
 	private class Partition{
 		private int[][] widths;
 		private ArrayList<Tuple> data;
-		private ArrayList<String> generalisationResults;
+		private ArrayList<String> currentGeneralisation;
 		private int[] splittable;
-		private Partition(ArrayList<Tuple> data, int[][] widths, ArrayList<String> generalisationResults, int numberOfColumns){
+		private Partition(ArrayList<Tuple> data, int[][] widths, ArrayList<String> currentGeneralisation, int numberOfColumns){
 			this.widths = widths;
 			this.data = data;
-			this.generalisationResults = generalisationResults;
+			this.currentGeneralisation = currentGeneralisation;
 			splittable = new int[numberOfColumns];
 			Arrays.fill(splittable, 1);
 		}
@@ -140,8 +180,8 @@ public class Mondrian{
 			return data;
 		}
 
-		private ArrayList<String> getGeneralisationResults(){
-			return generalisationResults;
+		private ArrayList<String> getCurrentGeneralisation(){
+			return currentGeneralisation;
 		}
 
 		private int[] getSplittable()

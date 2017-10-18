@@ -4,10 +4,9 @@ import java.util.*;
 
 public class TaxonomyNode
 {
-	private int id;
-	private TaxonomyNode parent;
-	private ArrayList<TaxonomyNode> children;
-	private String name;
+	public TaxonomyNode parent;
+	public ArrayList<TaxonomyNode> children;
+	public String name;
 
 	public TaxonomyNode(String id)
 	{
@@ -53,9 +52,12 @@ public class TaxonomyNode
 		}
 	}
 
-	public Iterator<TaxonomyNode> childrenIterator() 
-	{
+	public Iterator<TaxonomyNode> childrenIterator() {
 		return children.iterator();
+	}
+
+	public int childrenSize() {
+		return children.size();
 	}
 
 	public String getName() {
@@ -71,5 +73,26 @@ public class TaxonomyNode
 		for (int i = 0; i < children.size(); i++)
 			output += "\t"+children.get(i).print() + " ";
 		return output;
+	}
+
+	/**
+	 * Returns the nth child which the record specializes to.
+	 * This should be made better.
+	 * @t the tuple that is to be specialized.
+	 * @attr the attribute that is being specialized on.
+	 */
+	public int specialize(String attribute) {
+		Iterator<TaxonomyNode> itr = children.iterator();
+		int i = 0;
+		if(attribute.equals(name)) {
+			return 0;
+		}
+		while(itr.hasNext()) {
+			if(itr.next().specialize(attribute) != -1) {
+				return i;
+			}
+			i++;
+		}
+		return -1;
 	}
 }

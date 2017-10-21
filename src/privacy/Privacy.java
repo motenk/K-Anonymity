@@ -1,4 +1,4 @@
-package kanonymity.privacy;
+package privacy;
 
 import java.util.ArrayList;
 import java.util.HashMap;

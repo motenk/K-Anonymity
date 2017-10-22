@@ -7,7 +7,6 @@ import taxonomy.TaxonomyNode;
 import java.util.*;
 import java.util.stream.IntStream;
 
-
 public class BasicMondrian{
 	private int numberOfColumns;
 	private boolean[] isCategorical;
@@ -17,8 +16,9 @@ public class BasicMondrian{
 	private ArrayList<Partition> result;
 	private ArrayList<ArrayList<Integer>> attributeRanges;
 	private ArrayList<TaxonomyTree> attributeTrees;
-	private ArrayList<Tuples> outputResults;
+	private ArrayList<Tuple> outputResults;
 	private	double ncp = 0.0;
+
 
 	//constructor
 	//data - the actual data - linkedlist of tuples
@@ -29,7 +29,7 @@ public class BasicMondrian{
 	public BasicMondrian(Table input, int k, ArrayList<TaxonomyTree> attributeTrees){
 		data = input.getData();
 		this.k = k;
-		numberOfColumns = data.get(0).getSize();
+		numberOfColumns = data.get(0).size();
 		isCategorical = new boolean[numberOfColumns];
 		widths = new int[numberOfColumns][2];
 		this.attributeTrees = attributeTrees;
@@ -68,7 +68,7 @@ public class BasicMondrian{
 
 	private void setCategoricalArray(){
 		for (int i = 0; i < numberOfColumns; i++) {
-			String s = data.get(0).get[i];
+			String s = data.get(0).get(i);
 			for (int j = 0; j < s.length(); j++) {
 				if(Character.digit(s.charAt(j),10) < 0){
 					isCategorical[i] = true;
@@ -87,12 +87,12 @@ public class BasicMondrian{
 	}
 
 	private int countLeafNodesRecursive(TaxonomyNode root){
-		if(root.getChildren() == null){
+		if(!root.childrenIterator().hasNext()){
 			return 1;
 		}
 		else{
 			int num = 0;
-			Iterator<TaxonomyNode> iterator = root.childIterator();
+			Iterator<TaxonomyNode> iterator = root.childrenIterator();
 			while(iterator.hasNext()){
 				num += countLeafNodesRecursive(iterator.next());
 			}
@@ -266,9 +266,9 @@ public class BasicMondrian{
 
 	private ArrayList<Partition> splitCategorical(Partition partition, int dimension, int[][] partitionWidth, ArrayList<String> partitionMiddle){
 		ArrayList<Partition> subPartitions = new ArrayList<Partition>();
-		TaxonomyNode splitValue = findNodeForValue(partitionMiddle.get(dimension));
+		TaxonomyNode splitValue = findNodeForValue(partitionMiddle.get(dimension), dimension);
 		ArrayList<TaxonomyNode> subNodes = new ArrayList<TaxonomyNode>();
-		Iterator<TaxonomyNode> splitIterator = splitValue.childIterator();
+		Iterator<TaxonomyNode> splitIterator = splitValue.childrenIterator();
 		while(splitIterator.hasNext()){
 			subNodes.add(splitIterator.next());
 		}
@@ -356,7 +356,7 @@ public class BasicMondrian{
 				middleTemp.add(attributeRanges.get(i).get(0) + " - " + attributeRanges.get(i).get(attributeRanges.get(i).size()-1));
 			}
 			else{
-				middleTemp.add(attributeRanges.get(i).get(0));
+				middleTemp.add(attributeRanges.get(i).get(0) + "");
 			}
 		}
 		Partition wholePartition = new Partition(data, widths, middleTemp, numberOfColumns);
@@ -371,7 +371,7 @@ public class BasicMondrian{
 				r_ncp += getNormalisedWidth(p, i);
 			}
 			ArrayList<String> temp = p.getCurrentGeneralisation();
-			for (int i = 0; i < p.size(); i++) {
+			for (int i = 0; i < p.length(); i++) {
 				ArrayList<String> pTemp = new ArrayList<>(temp);
 				//I honestly have no idea why they add the piece of data in the last place in each partitions tuple to the results...
 				pTemp.add(p.getData().get(i).get(numberOfColumns-1));

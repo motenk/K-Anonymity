@@ -26,8 +26,8 @@ public class BasicMondrian{
 	//numberOfColumns - number of attributes well be anonymising
 	//isCatagorical - boolean array, one boolean for each column, whether or not it is a categorical column
 	//widths - has a high and low index for the width of each attribute - needs an array of values all values in order...
-	public BasicMondrian(Table input, int k, ArrayList<TaxonomyTree> attributeTrees){
-		data = input.getData();
+	public BasicMondrian(ArrayList<Tuple> input, int k, ArrayList<TaxonomyTree> attributeTrees){
+		data = input;
 		this.k = k;
 		numberOfColumns = data.get(0).size();
 		isCategorical = new boolean[numberOfColumns];

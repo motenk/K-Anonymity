@@ -1,4 +1,4 @@
-country:*{asia,north-america,south-america,africa,europe,?}
+country:*{asia,north-america,south-america,africa,europe}
 	asia:={north-asia,east-asia,central-asia,middle-asia,south-asia,southeast-asia,southwest-asia,west-asia}
 		southeast-asia:={cambodia,hong-kong,laos,philippines,thailand,vietnam}
 		east-asia:={china,japan,south-korea,taiwan}
@@ -34,12 +34,12 @@ education:*{pre-primary,pre-high-school,pre-university,pre-doctorate,post-doctor
 	pre-doctorate:={bachelors,masters}
 	post-doctorate:={prof-school,assoc-voc,doctorate,assoc-acdm}
 
-employer:*{government,non-government,none,?}
+employer:*{government,non-government,none}
 	government:={federal-gov,local-gov,state-gov}
 	non-government:={private,self-emp-inc,self-emp-not-inc}
 	none:={never-worked,without-pay}
 
-job:*{manual-labour,professional,customer-service,government,other-service,?}
+job:*{manual-labour,professional,customer-service,government,other-service}
 	manual-labour:={skilled,unskilled}
 		skilled:={craft-repair,machine-op-inspct}
 		unskilled:={farming-fishing,handlers-cleaners,priv-house-serv,transport-moving}

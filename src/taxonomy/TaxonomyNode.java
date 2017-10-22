@@ -74,6 +74,21 @@ public class TaxonomyNode
 			output += "\t"+children.get(i).print() + " ";
 		return output;
 	}
+    
+    public TaxonomyNode getNode(String input)
+    {
+        if (input.equals(name.toLowerCase()))
+            return this;
+        if (children == null)
+            return null;
+        for (int i = 0; i < children.size(); i++)
+        {
+			TaxonomyNode output = children.get(i).getNode(input);
+			if (output != null)
+				return output;
+        }
+        return null;
+    }
 
 	/**
 	 * Returns the nth child which the record specializes to.

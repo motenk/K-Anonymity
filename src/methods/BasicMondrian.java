@@ -100,9 +100,13 @@ public class BasicMondrian{
 		}
 	}
 
-	//needs completing
-	private TaxonomyNode findNodeForValue(String value, int dimension){
-
+	//Preconditon: 	TaxonomyTrees Initialised
+	//Postcondtion:	Node matching value returned
+	//Status:		Coded and Efficient
+	//Written by:	Moten
+	private TaxonomyNode findNodeForValue(String value, int dimension)
+    {
+        return attributeTrees.get(dimension).getNode(value);
 	}
 
 	//

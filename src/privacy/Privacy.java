@@ -2,20 +2,18 @@ package privacy;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class Privacy {
     private Map<String, List<Integer>> classes;
-    private Set<Integer> attributes;
+    private Map<Integer, Integer> attributes;
     private Map<String, Double> probability1;
     private Map<String, Map<Integer, Double>> probability2;
 
     public Privacy(String[][] data) {
         classes = new HashMap<>();
-        attributes = new HashSet<>();
+        attributes = new HashMap<>();
         probability1 = new HashMap<>();
         probability2 = new HashMap<>();
 
@@ -23,15 +21,18 @@ public class Privacy {
         int[] s = new int[data.length];
         for (int i = 0; i < data.length; i++) {
             StringBuilder sb = new StringBuilder();
+            sb.append("[");
             for (int j = 0; j < data[i].length - 1; j++) {
-                sb.append("[").append(data[i][j]).append("]");
+                sb.append(data[i][j]);
                 if (j < data[i].length - 2)
                     sb.append(", ");
             }
+            sb.append("]");
             h[i] = sb.toString();
 
             int x = Integer.parseInt(data[i][data[i].length - 1]);
-            attributes.add(x);
+            if (!attributes.containsKey(x))
+                attributes.put(x, x);
             s[i] = x;
         }
 
@@ -46,20 +47,27 @@ public class Privacy {
         }
 
         for (String cls : classes.keySet()) {
-            double p1 = classes.get(cls).size() / (double)data.length;
+            double p1 = classes.get(cls).size() / (double) data.length;
             probability1.put(cls, p1);
             Map<Integer, Integer> counts = new HashMap<>();
-            for (int x : attributes) {
+            for (int x : attributes.values()) {
                 counts.put(x, 0);
             }
             for (int x : classes.get(cls)) {
                 counts.put(x, counts.get(x) + 1);
             }
+            probability2.put(cls, new HashMap<>());
             for (int x : counts.keySet()) {
-                double p2 = counts.get(x) / (double)classes.get(cls).size();
+                double p2 = counts.get(x) / (double) classes.get(cls).size();
                 probability2.get(cls).put(x, p2);
             }
         }
+    }
+
+    public static double log2(double x) {
+        if (x == 0)
+            return 0;
+        return Math.log(x) / Math.log(2);
     }
 
     public String[] getClasses() {
@@ -70,21 +78,21 @@ public class Privacy {
         double entropy = 0;
         for (String cls : classes.keySet()) {
             double partial = 0;
-            for (int x : attributes) {
+            for (int x : attributes.values()) {
                 double p = probability2.get(cls).get(x);
                 partial += p * log2(p);
             }
-            partial *= -probability1.get(cls);
+            entropy -= probability1.get(cls) * partial;
         }
         return entropy;
     }
 
-    public double[][] dynamicProgramming(int epsilon, String cls) {
+    public double[] dynamicProgramming(int[] epsilons, String cls) {
         //Get x[] and p[]
         int[] x = new int[attributes.size()];
         double[] p = new double[attributes.size()];
 
-        Integer[] temp = attributes.toArray(new Integer[attributes.size()]);
+        Integer[] temp = attributes.values().toArray(new Integer[attributes.size()]);
         for (int i = 0; i < temp.length; i++) {
             x[i] = temp[i];
         }
@@ -109,31 +117,40 @@ public class Privacy {
             }
         }
 
-        return dynamicProgramming(epsilon, x, p);
+        return dynamicProgramming(epsilons, x, p);
     }
 
-    private double[][] dynamicProgramming(int epsilon, int[] x, double[] p) {
-        double[][] h = new double[epsilon + 1][attributes.size() + 1];
-        for (int e = 1; e <= epsilon; e++) {
-            h[e][0] = 0;
-            h[e][1] = -p[1] * log2(p[1]);
-            for (int i = 2; i < h.length; i++) {
-                int j = i;
-                double partial = 0;
-                h[e][i] = h[e][i - 1];
-                while (x[i] - x[j] <= e && j != 0) {
-                    partial += p[j];
-                    double temp = h[e][j - 1] - partial * log2(partial);
-                    if (temp < h[e][i])
-                        h[e][i] = temp;
+    private double[] dynamicProgramming(int[] epsilons, int[] x, double[] p) {
+        double[][] h = new double[epsilons.length][x.length + 1];
+        double[] he = new double[h.length];
+        if (p.length < 2) {
+            return he;
+        }
+
+        for (int k = 0; k < epsilons.length; k++) {
+            int e = epsilons[k];
+            if (e == 0) {
+                for (int i = 0; i < x.length; i++) {
+                    he[k] -= p[i] * log2(p[i]);
                 }
-                j -= 1;
+            } else {
+                h[k][0] = 0;
+                h[k][1] = -p[0] * log2(p[0]);
+                for (int i = 1; i < x.length; i++) {
+                    int j = i;
+                    double partial = 0;
+                    h[k][i + 1] = h[k][i];
+                    while (x[i] - x[j] <= e && j != 0) {
+                        partial += p[j];
+                        double temp = h[k][j] - partial * log2(partial);
+                        if (temp < h[k][i + 1])
+                            h[k][i + 1] = temp;
+                        j--;
+                    }
+                }
+                he[k] = h[k][h[k].length - 1];
             }
         }
-        return h;
-    }
-
-    public static double log2(double x) {
-        return Math.log(x) / Math.log(2);
+        return he;
     }
 }

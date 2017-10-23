@@ -53,7 +53,10 @@ public class TaxonomyNode
 	}
 
 	public Iterator<TaxonomyNode> childrenIterator() {
-		return children.iterator();
+		if(children == null)
+			return null;
+		else
+			return children.iterator();
 	}
 
 	public int childrenSize() {
@@ -97,12 +100,14 @@ public class TaxonomyNode
 	 * @attr the attribute that is being specialized on.
 	 */
 	public int specialize(String attribute) {
-		Iterator<TaxonomyNode> itr = children.iterator();
+		Iterator<TaxonomyNode> itr = null;
+		if(children != null)
+			itr = children.iterator();
 		int i = 0;
 		if(attribute.equals(name)) {
 			return 0;
 		}
-		while(itr.hasNext()) {
+		while(itr != null && itr.hasNext()) {
 			if(itr.next().specialize(attribute) != -1) {
 				return i;
 			}

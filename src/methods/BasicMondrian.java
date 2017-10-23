@@ -34,8 +34,10 @@ public class BasicMondrian{
 		widths = new int[numberOfColumns][2];
 		this.attributeTrees = attributeTrees;
 		outputResults = new ArrayList<Tuple>();
-		setRangesAndWidths();
+		attributeRanges = new ArrayList<ArrayList<Integer>>();
+		result = new ArrayList<Partition>();
 		setCategoricalArray();
+		setRangesAndWidths();
 	}
 
 	//
@@ -87,7 +89,7 @@ public class BasicMondrian{
 	}
 
 	private int countLeafNodesRecursive(TaxonomyNode root){
-		if(!root.childrenIterator().hasNext()){
+		if(root.childrenIterator() == null){
 			return 1;
 		}
 		else{
@@ -120,7 +122,7 @@ public class BasicMondrian{
 		else{
 			width = partition.getWidths()[index][0];
 		}
-		return width / attributeRanges.get(index).get(attributeRanges.size()-1);
+		return width / attributeRanges.get(index).get(attributeRanges.get(index).size()-1);
 	}
 
 	private int chooseDimesion(Partition partition){
@@ -268,11 +270,20 @@ public class BasicMondrian{
 		ArrayList<Partition> subPartitions = new ArrayList<Partition>();
 		TaxonomyNode splitValue = findNodeForValue(partitionMiddle.get(dimension), dimension);
 		ArrayList<TaxonomyNode> subNodes = new ArrayList<TaxonomyNode>();
-		Iterator<TaxonomyNode> splitIterator = splitValue.childrenIterator();
+		Iterator<TaxonomyNode> splitIterator;
+		if(splitValue.childrenIterator() == null)
+			return new ArrayList<Partition>();
+		else
+			splitIterator = splitValue.childrenIterator();
+		int numberOfChildren = 0;
 		while(splitIterator.hasNext()){
 			subNodes.add(splitIterator.next());
+			numberOfChildren++;
 		}
 		ArrayList<ArrayList<Tuple>> subGroups = new ArrayList<ArrayList<Tuple>>();
+		for (int i = 0; i < numberOfChildren; i++) {
+			subGroups.add(new ArrayList<Tuple>());
+		}
 		if(subNodes.size() == 0){
 			return new ArrayList<Partition>();
 		}
@@ -331,6 +342,7 @@ public class BasicMondrian{
 	}
 
 	private void anonymise(Partition partition){
+		System.out.println("!!!");
 		if(!checkSplittable(partition)){
 			result.add(partition);
 		}
@@ -356,7 +368,7 @@ public class BasicMondrian{
 				middleTemp.add(attributeRanges.get(i).get(0) + " - " + attributeRanges.get(i).get(attributeRanges.get(i).size()-1));
 			}
 			else{
-				middleTemp.add(attributeRanges.get(i).get(0) + "");
+				middleTemp.add("*");
 			}
 		}
 		Partition wholePartition = new Partition(data, widths, middleTemp, numberOfColumns);
@@ -364,12 +376,13 @@ public class BasicMondrian{
 		long startTime = System.currentTimeMillis();
 		anonymise(wholePartition);
 		long runtime = System.currentTimeMillis() - startTime;
-		System.out.println("Anonymisation finished, runtime: " + runtime);
+		System.out.println("Anonymisation finished, runtime: " + runtime + "ms");
 		for(Partition p : result){
 			double r_ncp = 0.0;
-			for (int i = 0; i < numberOfColumns; i++) {
-				r_ncp += getNormalisedWidth(p, i);
-			}
+			// for (int i = 0; i < numberOfColumns; i++) {
+			// 	System.out.println(i);
+			// 	r_ncp += getNormalisedWidth(p, i);
+			// }
 			ArrayList<String> temp = p.getCurrentGeneralisation();
 			for (int i = 0; i < p.length(); i++) {
 				ArrayList<String> pTemp = new ArrayList<>(temp);

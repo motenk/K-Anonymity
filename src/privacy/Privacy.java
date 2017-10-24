@@ -1,9 +1,11 @@
 package privacy;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.util.*;
 
 public class Privacy {
     private Map<String, List<Integer>> classes;
@@ -152,5 +154,44 @@ public class Privacy {
             }
         }
         return he;
+    }
+
+    public static void main(String[] args) {
+        int k = -1;
+        try {
+            k = Integer.parseInt(args[0]);
+        } catch (NumberFormatException e) {
+            System.err.format("NumberFormatException: %s%n", e);
+        }
+
+        List<String[]> temp = new ArrayList<>();
+        try (BufferedReader reader = Files.newBufferedReader(FileSystems.getDefault().getPath(args[1]),
+                Charset.forName("UTF-8"))) {
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                temp.add(line.split(",\\s?"));
+            }
+        } catch (IOException e) {
+            System.err.format("IOException: %s%n", e);
+        }
+
+        if (temp.size() != 0) {
+            String[] fields = temp.get(0);
+            String[][] data = new String[temp.size() - 1][];
+            for (int i = 1; i < temp.size(); i++) {
+                data[i - 1] = temp.get(i);
+            }
+
+            System.out.println("k: " + k);
+            System.out.println("fields: " + Arrays.toString(fields));
+
+            Privacy privacy = new Privacy(data);
+            System.out.println("entropy: " + privacy.entropy());
+            int[] epsilons = new int[] { 0, 1, 2 };
+            double[] h = privacy.dynamicProgramming(epsilons, "[39, State-gov, Bachelors, Never-married, Adm-clerical, Not-in-family, White, Male, 40, United-States]");
+            for (int i = 0; i < h.length; i++) {
+                System.out.println(epsilons[i] + ": " + h[i]);
+            }
+        }
     }
 }

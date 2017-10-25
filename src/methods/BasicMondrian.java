@@ -446,7 +446,7 @@ public class BasicMondrian{
 				//I honestly have no idea why they add the piece of data in the last place in each partitions tuple to the results...
 				pTemp.add(p.getData().get(i).get(numberOfColumns));
 				//not sure what to do for id...
-				outputResults.add(new Tuple(pTemp, 0));
+				outputResults.add(new Tuple(pTemp, p.getData().get(i).getID()));
 			}
 			r_ncp *= p.length();
 			ncp += r_ncp;

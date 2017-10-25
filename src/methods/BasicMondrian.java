@@ -377,7 +377,6 @@ public class BasicMondrian{
 		for(Partition p : result){
 			double r_ncp = 0.0;
 			for (int i = 0; i < numberOfColumns; i++) {
-				System.out.println(i);
 				r_ncp += getNormalisedWidth(p, i);
 			 }
 			ArrayList<String> temp = p.getCurrentGeneralisation();

@@ -210,7 +210,7 @@ public class BasicMondrian{
 	}
 
 	//Preconditon: 	valid partition parameter, valid dimension
-	//Postcondtion:	Partition
+	//Postcondtion:	Partition median value, median +1 value, lowest, and highest values all set
 	//Status:		Coded and efficient
 	//Written by:	Chris
 	private void findMedian(Partition partition, int dimension){
@@ -253,6 +253,10 @@ public class BasicMondrian{
 		return;
 	}
 
+	//Preconditon: 	value is of format "[number] - [number]", valid dimension
+	//Postcondtion:	numerical value is divided into two separate ranges around the median value and stored in either left or right arraylists
+	//Status:		Coded and efficient
+	//Written by:	Chris
 	private void splitNumericalValue(String value, String splitValue, ArrayList<String> leftMiddle, ArrayList<String> rightMiddle, int dimension){
 		String[] valuesArray = value.split(" - ");
 		if(valuesArray.length <= 1){
@@ -275,9 +279,12 @@ public class BasicMondrian{
 				rightMiddle.set(dimension, splitValue + " - " + high);
 			}
 		}
-
 	}
 
+	//Preconditon: 	valid partition in, valid dimension, attributeRanges calc'd, numberOfColumns calc'd
+	//Postcondtion:	ArrayList of specialised subpartitions returned
+	//Status:		Coded and efficient
+	//Written by:	Chris
 	private ArrayList<Partition> splitNumerical(Partition partition, int dimension, int[][] partitionWidth, ArrayList<String> partitionMiddle){
 		ArrayList<Partition> subPartitions = new ArrayList<Partition>();
 		findMedian(partition, dimension);
@@ -328,6 +335,10 @@ public class BasicMondrian{
 		return subPartitions;
 	}
 
+	//Preconditon: 	valid partition in, valid dimension, attributeTrees initialised, numberOfColumns calc'd
+	//Postcondtion:	ArrayList of specialised subpartitions returned
+	//Status:		Coded and efficient
+	//Written by:	Chris
 	private ArrayList<Partition> splitCategorical(Partition partition, int dimension, int[][] partitionWidth, ArrayList<String> partitionMiddle){
 		ArrayList<Partition> subPartitions = new ArrayList<Partition>();
 		TaxonomyNode splitValue = findNodeForValue(partitionMiddle.get(dimension), dimension);
@@ -386,6 +397,10 @@ public class BasicMondrian{
 		return subPartitions;
 	}
 
+	//Preconditon: 	valid partition in, valid dimension, isCatagorical calc'd
+	//Postcondtion:	ArrayList of specialised subpartitions returned
+	//Status:		Coded and efficient
+	//Written by:	Chris
 	private ArrayList<Partition> splitPartition(Partition partition, int dimension){
 		int[][] partitionWidth = partition.getWidths();
 		ArrayList<String> partitionMiddle = partition.getCurrentGeneralisation();
@@ -395,6 +410,10 @@ public class BasicMondrian{
 			return splitCategorical(partition, dimension, partitionWidth, partitionMiddle);
 	}
 
+	//Preconditon: 	valid partition in
+	//Postcondtion:	Whether or not partition is splittable determined and returned
+	//Status:		Coded and efficient
+	//Written by:	Chris
 	private boolean checkSplittable(Partition partition){
 		int sumOfSplittableArray = IntStream.of(partition.getSplittable()).sum();
 		return (sumOfSplittableArray == 0) ? false : true;
@@ -419,6 +438,10 @@ public class BasicMondrian{
 		}
 	}
 
+	//Preconditon: 	BasicMondrian object validly initialised
+	//Postcondtion:	ArrayList of generalised tuples set
+	//Status:		Coded and efficient
+	//Written by:	Chris
 	public void mondrianAlgorithm(){
 		ArrayList<String> middleTemp = new ArrayList<>();
 		for (int i = 0; i < numberOfColumns; i++) {
@@ -443,9 +466,7 @@ public class BasicMondrian{
 			ArrayList<String> temp = p.getCurrentGeneralisation();
 			for (int i = 0; i < p.length(); i++) {
 				ArrayList<String> pTemp = new ArrayList<>(temp);
-				//I honestly have no idea why they add the piece of data in the last place in each partitions tuple to the results...
 				pTemp.add(p.getData().get(i).get(numberOfColumns));
-				//not sure what to do for id...
 				outputResults.add(new Tuple(pTemp, p.getData().get(i).getID()));
 			}
 			r_ncp *= p.length();
@@ -456,14 +477,25 @@ public class BasicMondrian{
 		ncp *= 100;
 	}
 
+	//Preconditon: 	Mondrian algorithm has run, ncp calc'd
+	//Postcondtion:	return ncp value
+	//Status:		Coded and efficient
+	//Written by:	Chris
 	public double getNcp(){
 		return ncp;
 	}
 
+	//Preconditon: 	mondrian algorithm has run
+	//Postcondtion:	ArrayList of generalised tuples returned
+	//Status:		Coded and efficient
+	//Written by:	Chris
 	public ArrayList<Tuple> getResults(){
 		return outputResults;
 	}
 	
+	//this private inner class is reponsible for storing the intermediate partitions required by this algorithm
+	//it keeps track of the raw data assigned to it, the width of that data per column, the current generalisation of that data per column
+	//an array of whether each column can be further split, this partition's split and split + 1 value and its highest and lowest values.
 	private class Partition{
 		private int[][] widths;
 		private ArrayList<Tuple> data;
@@ -473,6 +505,10 @@ public class BasicMondrian{
 		private String nextValue;
 		private String lowestValue;
 		private String highestValue;
+		//Preconditon: 	valid data, widths, generalisation, numberofcols passed in
+		//Postcondtion:	Valid partition object initialised
+		//Status:		Coded and efficient
+		//Written by:	Chris
 		private Partition(ArrayList<Tuple> data, int[][] widths, ArrayList<String> currentGeneralisation, int numberOfColumns){
 			this.widths = widths;
 			this.data = data;
@@ -481,26 +517,50 @@ public class BasicMondrian{
 			Arrays.fill(splittable, 1);
 		}
 
+		//Preconditon: 	partition initialised
+		//Postcondtion:	number of tuples in data returned
+		//Status:		Coded and efficient
+		//Written by:	Chris
 		private int length(){
 			return data.size();
 		}
 
+		//Preconditon: 	partition initialised
+		//Postcondtion:	widths array returned
+		//Status:		Coded and efficient
+		//Written by:	Chris
 		private int[][] getWidths(){
 			return widths;
 		}
 
+		//Preconditon: 	partition initialised
+		//Postcondtion:	partition data returned (arraylist of tuples)
+		//Status:		Coded and efficient
+		//Written by:	Chris
 		private ArrayList<Tuple> getData(){
 			return data;
 		}
 
+		//Preconditon: 	partition initialised
+		//Postcondtion:	partition generalisations returned (arraylist of strings)
+		//Status:		Coded and efficient
+		//Written by:	Chris
 		private ArrayList<String> getCurrentGeneralisation(){
 			return currentGeneralisation;
 		}
 
+		//Preconditon: 	partition initialised
+		//Postcondtion:	int array splittable returned
+		//Status:		Coded and efficient
+		//Written by:	Chris
 		private int[] getSplittable(){
 			return splittable;
 		}
 
+		//Preconditon: 	partition initialised
+		//Postcondtion:	partition's split, next, lowest and highest values set
+		//Status:		Coded and efficient
+		//Written by:	Chris
 		private void setMedian(String splitValue, String nextValue, String lowestValue, String highestValue){
 			this.splitValue = splitValue;
 			this.nextValue = nextValue;
@@ -508,18 +568,34 @@ public class BasicMondrian{
 			this.highestValue = highestValue;
 		}
 
+		//Preconditon: 	setMedian has been called
+		//Postcondtion:	splitValue string returned
+		//Status:		Coded and efficient
+		//Written by:	Chris
 		private String getSplitValue(){
 			return splitValue;
 		}
 
+		//Preconditon: 	setMedian has been called
+		//Postcondtion:	nextValue string returned
+		//Status:		Coded and efficient
+		//Written by:	Chris
 		private String getNextValue(){
 			return nextValue;
 		}
 
+		//Preconditon: 	setMedian has been called
+		//Postcondtion:	lowestValue string returned
+		//Status:		Coded and efficient
+		//Written by:	Chris
 		private String getLowestValue(){
 			return lowestValue;
 		}
 
+		//Preconditon: 	setMedian has been called
+		//Postcondtion:	highestValue string returned
+		//Status:		Coded and efficient
+		//Written by:	Chris
 		private String getHighestValue(){
 			return highestValue;
 		}

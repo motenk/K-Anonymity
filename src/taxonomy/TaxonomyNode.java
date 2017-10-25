@@ -7,8 +7,16 @@ public class TaxonomyNode
 	public TaxonomyNode parent;
 	public ArrayList<TaxonomyNode> children;
 	public String name;
+	public int setSize;
+	public int[] classFrequency;
 
-	public TaxonomyNode(String id)
+    public TaxonomyNode() {
+        parent = null;
+        children = null;
+        name = null;
+    }
+
+    public TaxonomyNode(String id)
 	{
 		name = id;
 		children = null;
@@ -82,13 +90,17 @@ public class TaxonomyNode
 	 * @attr the attribute that is being specialized on.
 	 */
 	public int specialize(String attribute) {
-		Iterator<TaxonomyNode> itr = children.iterator();
-		int i = 0;
 		if(attribute.equals(name)) {
 			return 0;
 		}
+		if(children == null) {
+			return -1;
+		}
+		Iterator<TaxonomyNode> itr = children.iterator();
+		int i = 0;
+
 		while(itr.hasNext()) {
-			if(itr.next().specialize(attribute) != -1) {
+			if(itr.next().specialize(attribute) == 0) {
 				return i;
 			}
 			i++;

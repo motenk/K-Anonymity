@@ -69,6 +69,20 @@ public class BasicMondrian{
 		setRangesAndWidths();
 	}
 
+	public BasicMondrian(ArrayList<Tuple> input, int k, ArrayList<TaxonomyTree> attributeTrees, int qid){
+		data = input;
+		this.k = k;
+		numberOfColumns = qid;
+		isCategorical = new boolean[numberOfColumns];
+		widths = new int[numberOfColumns][2];
+		this.attributeTrees = attributeTrees;
+		outputResults = new ArrayList<Tuple>();
+		attributeRanges = new ArrayList<ArrayList<Integer>>();
+		result = new ArrayList<Partition>();
+		setCategoricalArray();
+		setRangesAndWidths();
+	}
+
 	//Preconditon: 	BasicMondrian object valid initialisation
 	//Postcondtion:	Ranges of numeric attributes and number of nodes of categorical attributes calculated and stored
 	//				Widths (range indices of smallest and largest values - numeric/number of nodes - categorical) calculated and stored

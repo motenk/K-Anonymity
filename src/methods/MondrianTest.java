@@ -73,7 +73,7 @@ public class MondrianTest{
 		for(Tuple t : data){
 			System.out.println(t + " " + t.getID());
 		}
-		BasicMondrian bm = new BasicMondrian(data, 2, trees);
+		BasicMondrian bm = new BasicMondrian(data, 2, trees, 1);
 		bm.mondrianAlgorithm();
 		for(Tuple t : bm.getResults()){
 			System.out.println(t + " " + t.getID());

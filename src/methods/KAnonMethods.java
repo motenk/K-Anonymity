@@ -58,6 +58,13 @@ public class KAnonMethods
 		*/
 	}
 
+	public void makeKAnonMond()
+	{
+		BasicMondrian bm = new BasicMondrian(table, k, importTrees());
+		bm.mondrianAlgorithm();
+		outputTable = bm.getResults();
+	}
+
 	//Preconditon: 	methods.KAnonMethods initialised
 	//Postcondtion:	Output table returned
 	//Status:		Coded and efficient
@@ -200,8 +207,9 @@ public class KAnonMethods
 			if (line.hasNext())
 			{
 				id = line.next();
-				if (id.charAt(0) == '$')
+				if (id.charAt(0) == '$' || !line.hasNext())
 					break;
+
 				input = line.next();
 
 				id = id.replaceAll("\\s+","");

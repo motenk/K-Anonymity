@@ -272,7 +272,7 @@ public class BasicMondrian{
 		TaxonomyNode splitValue = findNodeForValue(partitionMiddle.get(dimension), dimension);
 		ArrayList<TaxonomyNode> subNodes = new ArrayList<TaxonomyNode>();
 		Iterator<TaxonomyNode> splitIterator;
-		if(splitValue.childrenIterator() == null)
+		if(splitValue == null || splitValue.childrenIterator() == null)
 			return new ArrayList<Partition>();
 		else
 			splitIterator = splitValue.childrenIterator();

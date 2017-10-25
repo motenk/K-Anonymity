@@ -54,7 +54,7 @@ public class BasicMondrian{
 					if(tempPotentialMax < minimumValue)
 						minimumValue = tempPotentialMax;
 				}
-				for (int j = minimumValue; j < maximumValue; j++) {
+				for (int j = minimumValue; j <= maximumValue; j++) {
 					attributeRanges.get(i).add(j);
 				}
 				widths[i][0] = 0;
@@ -118,11 +118,12 @@ public class BasicMondrian{
 			int lowBoundIndex = partition.getWidths()[index][0];
 			int highBoundIndex = partition.getWidths()[index][1];
 			width = attributeRanges.get(index).get(highBoundIndex) - attributeRanges.get(index).get(lowBoundIndex);
+			return width / (attributeRanges.get(index).get(attributeRanges.get(index).size()-1) - attributeRanges.get(index).get(0));
 		}
 		else{
 			width = partition.getWidths()[index][0];
+			return width / (attributeRanges.get(index).get(attributeRanges.get(index).size()-1));
 		}
-		return width / attributeRanges.get(index).get(attributeRanges.get(index).size()-1);
 	}
 
 	private int chooseDimesion(Partition partition){
@@ -155,7 +156,7 @@ public class BasicMondrian{
 		HashMap<String, Integer> frequency = getFrequencySet(partition, dimension);
 		String splitValue = "";
 		ArrayList<String> valueList = new ArrayList<String>(frequency.keySet());
-		Collections.sort(valueList);
+		valueList.sort(Comparator.comparing(Integer::parseInt));
 		int total = 0;
 		for (Integer i : frequency.values()) {
 			total += i;
@@ -191,26 +192,26 @@ public class BasicMondrian{
 		return;
 	}
 
-	private void splitNumericalValue(String value, String splitValue, ArrayList<String> leftMiddle, ArrayList<String> rightMiddle){
+	private void splitNumericalValue(String value, String splitValue, ArrayList<String> leftMiddle, ArrayList<String> rightMiddle, int dimension){
 		String[] valuesArray = value.split(" - ");
 		if(valuesArray.length <= 1){
-			leftMiddle.add(valuesArray[0]);
-			rightMiddle.add(valuesArray[0]);
+			leftMiddle.set(dimension, valuesArray[0]);
+			rightMiddle.set(dimension, valuesArray[0]);
 		}
 		else{
 			String low = valuesArray[0];
 			String high = valuesArray[1];
 			if(low.equals(splitValue)){
-				leftMiddle.add(low);
+				leftMiddle.set(dimension, low);
 			}
 			else{
-				leftMiddle.add(low + " - " + splitValue);
+				leftMiddle.set(dimension, low + " - " + splitValue);
 			}
 			if(high.equals(splitValue)){
-				rightMiddle.add(high);
+				rightMiddle.set(dimension, high);
 			}
 			else{
-				rightMiddle.add(splitValue + " - " + high);
+				rightMiddle.set(dimension, splitValue + " - " + high);
 			}
 		}
 
@@ -232,14 +233,14 @@ public class BasicMondrian{
 			partitionMiddle.set(dimension, lowValue + " - " + highValue);
 		}
 		partitionWidth[dimension][0] = partitionLow;
-		partitionWidth[dimension][0] = partitionHigh;
+		partitionWidth[dimension][1] = partitionHigh;
 		if(splitValue.equals("") || splitValue.equals(nextValue)){
 			return new ArrayList<Partition>();
 		}
 		int middlePosition = attributeRanges.get(dimension).indexOf(Integer.parseInt(splitValue));
 		ArrayList<String> leftMiddle = new ArrayList<>(partitionMiddle);
 		ArrayList<String> rightMiddle = new ArrayList<>(partitionMiddle);
-		splitNumericalValue(partitionMiddle.get(dimension), splitValue, leftMiddle, rightMiddle);
+		splitNumericalValue(partitionMiddle.get(dimension), splitValue, leftMiddle, rightMiddle, dimension);
 		ArrayList<Tuple> lhs = new ArrayList<Tuple>();
 		ArrayList<Tuple> rhs = new ArrayList<Tuple>();
 		for(Tuple t : partition.getData()){
@@ -294,9 +295,6 @@ public class BasicMondrian{
 				System.out.println("Generalisation tree error.");
 				continue;
 			}
-			if(specialiseIndex == 0){
-				continue;
-			}
 			subGroups.get(specialiseIndex).add(t);
 		}
 		boolean flag = true;
@@ -342,7 +340,6 @@ public class BasicMondrian{
 	}
 
 	private void anonymise(Partition partition){
-		System.out.println("!!!");
 		if(!checkSplittable(partition)){
 			result.add(partition);
 		}
@@ -379,10 +376,10 @@ public class BasicMondrian{
 		System.out.println("Anonymisation finished, runtime: " + runtime + "ms");
 		for(Partition p : result){
 			double r_ncp = 0.0;
-			// for (int i = 0; i < numberOfColumns; i++) {
-			// 	System.out.println(i);
-			// 	r_ncp += getNormalisedWidth(p, i);
-			// }
+			for (int i = 0; i < numberOfColumns; i++) {
+				System.out.println(i);
+				r_ncp += getNormalisedWidth(p, i);
+			 }
 			ArrayList<String> temp = p.getCurrentGeneralisation();
 			for (int i = 0; i < p.length(); i++) {
 				ArrayList<String> pTemp = new ArrayList<>(temp);

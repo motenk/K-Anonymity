@@ -32,19 +32,19 @@ public class MondrianTest{
 		data3.add("c");
 		ArrayList<String> data4 = new ArrayList<>();
 		data4.add("256");
-		data4.add("c");
+		data4.add("one");
 		ArrayList<String> data5 = new ArrayList<>();
 		data5.add("83");
-		data5.add("c");
+		data5.add("two");
 		ArrayList<String> data6 = new ArrayList<>();
 		data6.add("58");
-		data6.add("a");
+		data6.add("three");
 		ArrayList<String> data7 = new ArrayList<>();
 		data7.add("183");
 		data7.add("b");
 		ArrayList<String> data8 = new ArrayList<>();
 		data8.add("368");
-		data8.add("b");
+		data8.add("two");
 		Tuple tup1 = new Tuple(data1, 1);
 		Tuple tup2 = new Tuple(data2, 1);
 		Tuple tup3 = new Tuple(data3, 1);
@@ -62,8 +62,14 @@ public class MondrianTest{
 		data.add(tup6);
 		data.add(tup7);
 		data.add(tup8);
-		BasicMondrian bm = new BasicMondrian(data, 2, trees);
+		for(Tuple t : data){
+			System.out.println(t);
+		}
+		BasicMondrian bm = new BasicMondrian(data, 4, trees);
 		bm.mondrianAlgorithm();
-		System.out.println(bm.getResults());
+		for(Tuple t : bm.getResults()){
+			System.out.println(t);
+		}
+		System.out.println(bm.getNcp());
 	}
 }

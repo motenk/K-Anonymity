@@ -1,3 +1,24 @@
+/*
+BasicMondrian Class for COMP4240
+Programmer: Chris O'Donnell, Moten Kingsmill
+Date Completed: 25/10/17
+
+This class implements Mondrian Multi-Dimensional K-Anonymity as proposed by LeFevre et. al in 2006
+It takes an ArrayList of Tuples, a k value, and an ArrayList of TaxonomyTrees as the constructor.
+It performs a series of calculations on the data to determine and apply the most appropriate specialisation.
+Algorithm:
+Generalise to maximum (categories = *, numeric = [full range of column])
+Anonymise(partition)
+	if no allowable partition cut
+		return partition - specialised
+	else
+		choose "widest" dimension
+		get frequency set of that dimension
+		find the median value of that frequency set
+		split the partition into left and right sides using the median and specialise as it goes
+		return Anonymise(left) U Anonymise(right)
+*/
+
 package methods;
 
 import table.Table;
@@ -8,6 +29,11 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 public class BasicMondrian{
+	//widths int array defines the indices of the smalled and largest numbers in the range of a partition
+	//attributeRanges has an arraylist for each attribute storing the complete range of the attribute (numeric)
+	//or the number of nodes of the attribute tree(categorical)
+	//attribute trees stores trees for categorical attributes and nulls for numeric
+	//the reason for this is making indexing trees easy using column number indices
 	private int numberOfColumns;
 	private boolean[] isCategorical;
 	private int k;
@@ -23,9 +49,12 @@ public class BasicMondrian{
 	//constructor
 	//data - the actual data - linkedlist of tuples
 	//k value - minimum equivalence class number
-	//numberOfColumns - number of attributes well be anonymising
+	//numberOfColumns - number of attributes we'll be anonymising
 	//isCatagorical - boolean array, one boolean for each column, whether or not it is a categorical column
-	//widths - has a high and low index for the width of each attribute - needs an array of values all values in order...
+	//Preconditon: 	Valid array list of tuples input, valid k value, value arraylist of attribute trees (trees for cat. attr., nulls for numerics)
+	//Postcondtion:	BasicMondrian object initialised
+	//Status:		Coded and efficient
+	//Written by:	Chris
 	public BasicMondrian(ArrayList<Tuple> input, int k, ArrayList<TaxonomyTree> attributeTrees){
 		data = input;
 		this.k = k;
@@ -40,7 +69,11 @@ public class BasicMondrian{
 		setRangesAndWidths();
 	}
 
-	//
+	//Preconditon: 	BasicMondrian object valid initialisation
+	//Postcondtion:	Ranges of numeric attributes and number of nodes of categorical attributes calculated and stored
+	//				Widths (range indices of smallest and largest values - numeric/number of nodes - categorical) calculated and stored
+	//Status:		Coded and efficient
+	//Written by:	Chris
 	private void setRangesAndWidths(){
 		int maximumValue = 0;
 		int minimumValue = Integer.MAX_VALUE;
@@ -68,10 +101,15 @@ public class BasicMondrian{
 		}
 	}
 
+	//Preconditon: 	Data initialised, isCatagorical initialised
+	//Postcondtion:	Boolean array of whether or not each column of data is categorical calculated and stored
+	//Status:		Coded and efficient
+	//Written by:	Chris
 	private void setCategoricalArray(){
 		for (int i = 0; i < numberOfColumns; i++) {
 			String s = data.get(0).get(i);
 			for (int j = 0; j < s.length(); j++) {
+				//basically "if any character in this string is not a digit between 0 and 9"
 				if(Character.digit(s.charAt(j),10) < 0){
 					isCategorical[i] = true;
 					break;
@@ -83,11 +121,19 @@ public class BasicMondrian{
 		}
 	}
 
+	//Preconditon: 	Attribute trees initialised
+	//Postcondtion:	Number of leaf nodes returned
+	//Status:		Coded and efficient
+	//Written by:	Chris
 	private int countLeafNodes(int index){
 		TaxonomyNode root = attributeTrees.get(index).getRoot();
 		return countLeafNodesRecursive(root);
 	}
 
+	//Preconditon: 	Attribute trees initialised
+	//Postcondtion:	Number of leaf nodes calculated and returned
+	//Status:		Coded and efficient
+	//Written by:	Chris
 	private int countLeafNodesRecursive(TaxonomyNode root){
 		if(root.childrenIterator() == null){
 			return 1;
@@ -102,7 +148,7 @@ public class BasicMondrian{
 		}
 	}
 
-	//Preconditon: 	TaxonomyTrees Initialised
+	//Preconditon: 	TaxonomyTrees Initialised, valid index
 	//Postcondtion:	Node matching value returned
 	//Status:		Coded and Efficient
 	//Written by:	Moten
@@ -111,7 +157,10 @@ public class BasicMondrian{
         return attributeTrees.get(dimension).getNode(value);
 	}
 
-	//
+	//Preconditon: 	attributeRanges calculated, isCategorical calculated, widths calculated, valid partition parameter, valid index
+	//Postcondtion:	Return normalised width of passed in partition on dimension passed in
+	//Status:		Coded and efficient
+	//Written by:	Chris
 	private double getNormalisedWidth(Partition partition, int index){
 		double width;
 		if(!isCategorical[index]){
@@ -126,6 +175,10 @@ public class BasicMondrian{
 		}
 	}
 
+	//Preconditon: 	numberOfColumns calc'd, valid partition parameter
+	//Postcondtion:	Widest partition dimension returned
+	//Status:		Coded and efficient
+	//Written by:	Chris
 	private int chooseDimesion(Partition partition){
 		double maxWidth = -1;
 		int maxDim = -1;
@@ -141,6 +194,10 @@ public class BasicMondrian{
 		return maxDim;
 	}
 
+	//Preconditon: 	valid partition parameter, valid dimension
+	//Postcondtion:	HashMap of value frequencies returned
+	//Status:		Coded and efficient
+	//Written by:	Chris
 	private HashMap<String, Integer> getFrequencySet(Partition partition, int dimension){
 		HashMap<String, Integer> frequency = new HashMap<String, Integer>();
 		for (Tuple t : partition.getData()) {
@@ -152,6 +209,10 @@ public class BasicMondrian{
 		return frequency;
 	}
 
+	//Preconditon: 	valid partition parameter, valid dimension
+	//Postcondtion:	Partition
+	//Status:		Coded and efficient
+	//Written by:	Chris
 	private void findMedian(Partition partition, int dimension){
 		HashMap<String, Integer> frequency = getFrequencySet(partition, dimension);
 		String splitValue = "";

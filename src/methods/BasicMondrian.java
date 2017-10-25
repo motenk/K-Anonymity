@@ -29,7 +29,7 @@ public class BasicMondrian{
 	public BasicMondrian(ArrayList<Tuple> input, int k, ArrayList<TaxonomyTree> attributeTrees){
 		data = input;
 		this.k = k;
-		numberOfColumns = data.get(0).size();
+		numberOfColumns = data.get(0).size()-1;
 		isCategorical = new boolean[numberOfColumns];
 		widths = new int[numberOfColumns][2];
 		this.attributeTrees = attributeTrees;
@@ -383,7 +383,7 @@ public class BasicMondrian{
 			for (int i = 0; i < p.length(); i++) {
 				ArrayList<String> pTemp = new ArrayList<>(temp);
 				//I honestly have no idea why they add the piece of data in the last place in each partitions tuple to the results...
-				pTemp.add(p.getData().get(i).get(numberOfColumns-1));
+				pTemp.add(p.getData().get(i).get(numberOfColumns));
 				//not sure what to do for id...
 				outputResults.add(new Tuple(pTemp, 0));
 			}

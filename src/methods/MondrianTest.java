@@ -19,32 +19,40 @@ public class MondrianTest{
 		tree.addNode("letter", "a,b,c");
 		TaxonomyTree tree2 = new TaxonomyTree();
 		ArrayList<TaxonomyTree> trees = new ArrayList<>();
-		trees.add(tree2);
-		trees.add(tree);
+		trees.add(null);
+		trees.add(1, tree);
 		ArrayList<String> data1 = new ArrayList<>();
 		data1.add("12");
 		data1.add("a");
+		data1.add("15");
 		ArrayList<String> data2 = new ArrayList<>();
 		data2.add("345");
 		data2.add("b");
+		data2.add("17");
 		ArrayList<String> data3 = new ArrayList<>();
 		data3.add("21");
 		data3.add("c");
+		data3.add("12");
 		ArrayList<String> data4 = new ArrayList<>();
 		data4.add("256");
 		data4.add("one");
+		data4.add("43");
 		ArrayList<String> data5 = new ArrayList<>();
 		data5.add("83");
 		data5.add("two");
+		data5.add("12");
 		ArrayList<String> data6 = new ArrayList<>();
 		data6.add("58");
 		data6.add("three");
+		data6.add("51");
 		ArrayList<String> data7 = new ArrayList<>();
 		data7.add("183");
 		data7.add("b");
+		data7.add("23");
 		ArrayList<String> data8 = new ArrayList<>();
 		data8.add("368");
 		data8.add("two");
+		data8.add("12");
 		Tuple tup1 = new Tuple(data1, 1);
 		Tuple tup2 = new Tuple(data2, 1);
 		Tuple tup3 = new Tuple(data3, 1);
@@ -65,7 +73,7 @@ public class MondrianTest{
 		for(Tuple t : data){
 			System.out.println(t);
 		}
-		BasicMondrian bm = new BasicMondrian(data, 4, trees);
+		BasicMondrian bm = new BasicMondrian(data, 2, trees);
 		bm.mondrianAlgorithm();
 		for(Tuple t : bm.getResults()){
 			System.out.println(t);

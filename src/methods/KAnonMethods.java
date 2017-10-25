@@ -63,6 +63,7 @@ public class KAnonMethods
 		BasicMondrian bm = new BasicMondrian(table, k, importTrees());
 		bm.mondrianAlgorithm();
 		outputTable = bm.getResults();
+		dataLoss = bm.getNcp();
 	}
 
 	//Preconditon: 	methods.KAnonMethods initialised
@@ -90,8 +91,6 @@ public class KAnonMethods
 				hashes[hash] = temp;
 			else
 				hashes[hash].addHash(temp);
-
-			
 		}
 
 		for (int i = 0; i < TABLESIZE; i++)
@@ -124,7 +123,6 @@ public class KAnonMethods
 	//Written by:	Moten
 	public double getDataLoss()
 	{
-		evaluateDataLoss();
 		return dataLoss;
 	}
 
@@ -135,15 +133,6 @@ public class KAnonMethods
 	public Tuple getTuple(int i)
 	{
 		return table.get(i);
-	}
-
-	//Preconditon: 	makeKAnon() run at least once
-	//Postcondtion:	Data loss calculated and stored in object
-	//Status:		Incomplete
-	//Written by:	
-	private void evaluateDataLoss() 
-	{
-		dataLoss = 0;
 	}
 
 	//Preconditon: 	methods.KAnonMethods initialised
@@ -216,14 +205,18 @@ public class KAnonMethods
 				input = input.replaceAll("[{=}]","");
 				if (input.charAt(0) == '*')
 				{
-					output.add(new TaxonomyTree(id, input.substring(1)));
+					output.add(new TaxonomyTree("*", input.substring(1)));
 				}
 				else
 				{
 					output.get(output.size()-1).addNode(id, input);
 				}
 			}
-		}
+		}/*
+		for (TaxonomyTree t : output) 
+		{
+			System.out.println(t.print());
+		}*/
 		return output;
 	}
 

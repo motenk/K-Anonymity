@@ -72,7 +72,10 @@ public class BasicMondrian{
 	public BasicMondrian(ArrayList<Tuple> input, int k, ArrayList<TaxonomyTree> attributeTrees, int qid){
 		data = input;
 		this.k = k;
-		numberOfColumns = qid;
+		if(qid > (data.get(0).size()-1) || qid < 0)
+			numberOfColumns = data.get(0).size()-1;
+		else
+			numberOfColumns = qid;
 		isCategorical = new boolean[numberOfColumns];
 		widths = new int[numberOfColumns][2];
 		this.attributeTrees = attributeTrees;

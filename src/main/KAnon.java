@@ -48,7 +48,6 @@ public class KAnon
 
 		table.makeKAnonTopDown();
 		ArrayList<Tuple> output = table.getOutput();
-		System.out.println("test: " + table.getCurrentK());
 
 		if (output != null) 
 		{

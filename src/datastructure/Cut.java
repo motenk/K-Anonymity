@@ -93,6 +93,13 @@ public class Cut extends TaxonomyNode {
         while(itr.hasNext()) {
             Node current = itr.next();
             anonyLoss += current.count();
+            if(current.tmpChildren == null) {
+                while(current.tmpChildren == null) {
+                    current = itr.next();
+                }
+            }
+
+
             Node[] currentChildren = current.tmpChildren.get(attribute);
             int smallest = Integer.MAX_VALUE;
             for(int i = 0; i < currentChildren.length; i++) {
@@ -178,7 +185,12 @@ public class Cut extends TaxonomyNode {
             children = new Cut[t.children.size()];
             for (int i = 0; i < t.children.size(); i++) {
                 children[i] = new Cut(t.children.get(i), attribute);
+               // children[i].leafList = leafList;
             }
         }
+    }
+
+    public void updateChildCuts() {
+
     }
 }

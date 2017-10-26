@@ -1,15 +1,21 @@
 package privacy;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class Privacy {
     private Map<String, List<Integer>> classes;
-    private Map<Integer, Integer> attributes;
+    private Map<String, Set<Integer>> attributes;
     private Map<String, Double> probability1;
     private Map<String, Map<Integer, Double>> probability2;
 
@@ -23,36 +29,31 @@ public class Privacy {
         int[] s = new int[data.length];
         for (int i = 0; i < data.length; i++) {
             StringBuilder sb = new StringBuilder();
-            sb.append("[");
             for (int j = 0; j < data[i].length - 1; j++) {
                 sb.append(data[i][j]);
                 if (j < data[i].length - 2)
-                    sb.append(", ");
+                    sb.append(",");
             }
-            sb.append("]");
             h[i] = sb.toString();
 
             int x = Integer.parseInt(data[i][data[i].length - 1]);
-            if (!attributes.containsKey(x))
-                attributes.put(x, x);
+            if (!attributes.containsKey(h[i]))
+                attributes.put(h[i], new TreeSet<>());
+            attributes.get(h[i]).add(x);
             s[i] = x;
         }
 
         for (int i = 0; i < data.length; i++) {
-            if (classes.containsKey(h[i]))
-                classes.get(h[i]).add(s[i]);
-            else {
-                List<Integer> cls = new ArrayList<>();
-                cls.add(s[i]);
-                classes.put(h[i], cls);
-            }
+            if (!classes.containsKey(h[i]))
+                classes.put(h[i], new ArrayList<>());
+            classes.get(h[i]).add(s[i]);
         }
 
         for (String cls : classes.keySet()) {
             double p1 = classes.get(cls).size() / (double) data.length;
             probability1.put(cls, p1);
             Map<Integer, Integer> counts = new HashMap<>();
-            for (int x : attributes.values()) {
+            for (int x : attributes.get(cls)) {
                 counts.put(x, 0);
             }
             for (int x : classes.get(cls)) {
@@ -67,8 +68,6 @@ public class Privacy {
     }
 
     public static double log2(double x) {
-        if (x == 0)
-            return 0;
         return Math.log(x) / Math.log(2);
     }
 
@@ -76,28 +75,60 @@ public class Privacy {
         return classes.keySet().toArray(new String[classes.size()]);
     }
 
-    public double entropy() {
+    public double entropy(String cls) {
         double entropy = 0;
-        for (String cls : classes.keySet()) {
-            double partial = 0;
-            for (int x : attributes.values()) {
-                double p = probability2.get(cls).get(x);
-                partial += p * log2(p);
-            }
-            entropy -= probability1.get(cls) * partial;
+        for (int x : getAttributes(cls)) {
+            double p = probability2.get(cls).get(x);
+            entropy += p * log2(1 / p);
         }
         return entropy;
     }
 
-    public double[] dynamicProgramming(int[] epsilons, String cls) {
-        //Get x[] and p[]
-        int[] x = new int[attributes.size()];
-        double[] p = new double[attributes.size()];
+    public double entropy() {
+        double entropy = 0;
+        for (String cls : classes.keySet()) {
+            double partial = 0;
+            for (int x : getAttributes(cls)) {
+                double p = probability2.get(cls).get(x);
+                partial += p * log2(1 / p);
+            }
+            entropy += probability1.get(cls) * partial;
+        }
+        return entropy;
+    }
 
-        Integer[] temp = attributes.values().toArray(new Integer[attributes.size()]);
+    public int[] getAttributes(String cls) {
+        Integer[] temp = attributes.get(cls).toArray(new Integer[attributes.get(cls).size()]);
+        int[] x = new int[temp.length];
         for (int i = 0; i < temp.length; i++) {
             x[i] = temp[i];
         }
+        return x;
+    }
+
+    public int[] getEpsilons(int[] x) {
+        Set<Integer> temp = new TreeSet<>();
+        for (int i = 0; i < x.length - 1; i++) {
+            for (int j = i + 1; j < x.length; j++) {
+                int diff = Math.abs(x[j] - x[i]);
+                if (diff != 0)
+                    temp.add(diff);
+            }
+        }
+        int[] epsilons = new int[temp.size()];
+        int count = 0;
+        for (Integer t : temp) {
+            epsilons[count] = t;
+            count++;
+        }
+        return epsilons;
+    }
+
+    public double[][] dynamicProgramming(String cls) {
+        //Get x[] and p[]
+        int[] x = getAttributes(cls);
+        double[] p = new double[x.length];
+
         for (int i = 0; i < x.length; i++) {
             p[i] = probability2.get(cls).get(x[i]);
         }
@@ -119,53 +150,54 @@ public class Privacy {
             }
         }
 
-        return dynamicProgramming(epsilons, x, p);
+        return dynamicProgramming(getEpsilons(x), x, p);
     }
 
-    private double[] dynamicProgramming(int[] epsilons, int[] x, double[] p) {
-        double[][] h = new double[epsilons.length][x.length + 1];
-        double[] he = new double[h.length];
-        if (p.length < 2) {
-            return he;
+    public double[][] dynamicProgramming(int[] epsilons, int[] x, double[] p) {
+        if (p.length < 2)
+            return null;
+
+        double[][] he = new double[epsilons.length + 1][2];
+
+        double h0 = 0;
+        for (int i = 0; i < p.length; i++) {
+            h0 += p[i] * log2(1 / p[i]);
         }
 
-        for (int k = 0; k < epsilons.length; k++) {
-            int e = epsilons[k];
-            if (e == 0) {
-                for (int i = 0; i < x.length; i++) {
-                    he[k] -= p[i] * log2(p[i]);
+        he[0][0] = 0;
+        he[0][1] = h0;
+
+        double[][] h = new double[epsilons.length][x.length + 1];
+        for (int e = 0; e < epsilons.length; e++) {
+            h[e][0] = 0;
+            h[e][1] = p[0] * log2(1 / p[0]);
+            for (int i = 2; i < x.length + 1; i++) {
+                int j = i;
+                double partial = 0;
+                if (e == 0)
+                    h[e][i] = h0;
+                else
+                    h[e][i] = h[e - 1][i - 1];
+                while (j != 0 && x[i - 1] - x[j - 1] <= epsilons[e]) {
+                    partial += p[j - 1];
+                    double temp = h[e][j - 1] + partial * log2(1 / partial);
+                    if (temp < h[e][i])
+                        h[e][i] = temp;
+                    j = j - 1;
                 }
-            } else {
-                h[k][0] = 0;
-                h[k][1] = -p[0] * log2(p[0]);
-                for (int i = 1; i < x.length; i++) {
-                    int j = i;
-                    double partial = 0;
-                    h[k][i + 1] = h[k][i];
-                    while (x[i] - x[j] <= e && j != 0) {
-                        partial += p[j];
-                        double temp = h[k][j] - partial * log2(partial);
-                        if (temp < h[k][i + 1])
-                            h[k][i + 1] = temp;
-                        j--;
-                    }
-                }
-                he[k] = h[k][h[k].length - 1];
             }
+            he[e + 1][0] = epsilons[e];
+            he[e + 1][1] = h[e][h[e].length - 1];
         }
         return he;
     }
 
     public static void main(String[] args) {
-        int k = -1;
-        try {
-            k = Integer.parseInt(args[0]);
-        } catch (NumberFormatException e) {
-            System.err.format("NumberFormatException: %s%n", e);
-        }
+        if (args.length < 0)
+            System.exit(1);
 
         List<String[]> temp = new ArrayList<>();
-        try (BufferedReader reader = Files.newBufferedReader(FileSystems.getDefault().getPath(args[1]),
+        try (BufferedReader reader = Files.newBufferedReader(FileSystems.getDefault().getPath(args[0]),
                 Charset.forName("UTF-8"))) {
             String line = null;
             while ((line = reader.readLine()) != null) {
@@ -173,25 +205,66 @@ public class Privacy {
             }
         } catch (IOException e) {
             System.err.format("IOException: %s%n", e);
+            System.exit(1);
         }
 
-        if (temp.size() != 0) {
-            String[] fields = temp.get(0);
-            String[][] data = new String[temp.size() - 1][];
-            for (int i = 1; i < temp.size(); i++) {
-                data[i - 1] = temp.get(i);
-            }
+        if (temp.size() == 0)
+            System.exit(1);
 
-            System.out.println("k: " + k);
-            System.out.println("fields: " + Arrays.toString(fields));
+        String[][] data = new String[temp.size() - 1][];
+        for (int i = 1; i < temp.size(); i++) {
+            data[i - 1] = temp.get(i);
+        }
 
-            Privacy privacy = new Privacy(data);
-            System.out.println("entropy: " + privacy.entropy());
-            int[] epsilons = new int[] { 0, 1, 2 };
-            double[] h = privacy.dynamicProgramming(epsilons, "[39, State-gov, Bachelors, Never-married, Adm-clerical, Not-in-family, White, Male, 40, United-States]");
-            for (int i = 0; i < h.length; i++) {
-                System.out.println(epsilons[i] + ": " + h[i]);
+        StringBuilder sb = new StringBuilder();
+
+        Privacy privacy = new Privacy(data);
+
+        sb.append("k,").append(privacy.getClasses().length).append("\n\n");
+        sb.append("cls,H(cls)").append("\n");
+
+        for (String cls : privacy.getClasses()) {
+            sb.append("\"" + cls + "\"").append(",").append(privacy.entropy(cls)).append("\n");
+        }
+        sb.append("H(D),").append(privacy.entropy()).append("\n");
+
+        for (String cls : privacy.getClasses()) {
+            double[][] h = privacy.dynamicProgramming(cls);
+            if (h != null) {
+                sb.append("\n").append("\"" + cls + "\"").append("\n");
+                sb.append("e,H(e)\n");
+                for (int i = 0; i < h.length; i++) {
+                    sb.append((int) h[i][0]).append(",").append(h[i][1]).append("\n");
+                }
+                double area = 0;
+                for (int i = 0; i < h.length - 1; i++) {
+                    int diff = Math.abs((int) h[i + 1][0] - (int) h[i][0]);
+                    area += diff * h[i][1];
+                }
+                sb.append("Area,").append(area).append("\n");
             }
         }
+
+        try (BufferedWriter writer = Files.newBufferedWriter(FileSystems.getDefault().getPath("privacy-" + args[0]),
+                Charset.forName("UTF-8"))) {
+            writer.write(sb.toString());
+        } catch (IOException e) {
+            System.err.format("IOException: %s%n", e);
+            System.exit(1);
+        }
+
+        /*int[] x = new int[]{1, 3, 8, 9};
+        double[] p = new double[]{0.15, 0.1, 0.7, 0.05};
+        int[] epsilons = privacy.getEpsilons(x);
+        double[][] h = privacy.dynamicProgramming(epsilons, x, p);
+        for (int i = 0; i < h.length; i++) {
+            System.out.println("H(" + (int) h[i][0] + "): " + h[i][1]);
+        }
+        double area = 0;
+        for (int i = 0; i < h.length - 1; i++) {
+            int diff = Math.abs((int) h[i + 1][0] - (int) h[i][0]);
+            area += diff * h[i][1];
+        }
+        System.out.println("A = " + area);*/
     }
 }

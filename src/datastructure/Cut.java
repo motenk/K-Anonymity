@@ -96,7 +96,6 @@ public class Cut extends TaxonomyNode {
             System.out.println("X: " + current.tuple.toString());
             if(current.tmpChildren == null) {
                 System.out.println(leafList.size());
-                System.out.println(itr.next().tuple.toString());
                 System.out.println(current.tmpChildren.size());
             }
 
@@ -186,7 +185,12 @@ public class Cut extends TaxonomyNode {
             children = new Cut[t.children.size()];
             for (int i = 0; i < t.children.size(); i++) {
                 children[i] = new Cut(t.children.get(i), attribute);
+               // children[i].leafList = leafList;
             }
         }
+    }
+
+    public void updateChildCuts() {
+
     }
 }

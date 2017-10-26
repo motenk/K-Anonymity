@@ -310,14 +310,18 @@ public class TaxonomyIndexedPartitions {
 		while(itr.hasNext()) {
 			Node current = itr.next();
 			int count = 0;
-			for(int i = 0; i < current.frequency.length; i++) {
-				count += current.frequency[i];
+			/*for(int i = 0; i < current.frequency.length; i++) {
+				/*count += current.frequency[i];
 				for(int j = 0; j < current.frequency[i]; j++) {
 					Tuple t = current.tuple.convertToOrigTuple(i);
 					//System.out.println(t.toString());
 					privateTable.add(t);
 				}
+			}*/
+			for(int i = 0; i < current.subTable.size(); i++) {
+				Tuple t = current.subTable.get(i).convertToOrigTuple();
 			}
+
 		}
 		return privateTable;
 	}

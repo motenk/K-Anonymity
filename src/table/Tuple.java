@@ -13,6 +13,7 @@ public class Tuple
 	private long hash;
 	private final int id;
 	private int classID;
+	private String origValue;
 
 	//Preconditon: 	Valid array list of string input
 	//Postcondtion:	table.Tuple initialised
@@ -44,6 +45,7 @@ public class Tuple
 			classID = -1;
 		}
 	}
+	//use only in convertTimTuple
 	public Tuple(String[] input, int id, boolean topDown)
 	{
 		size = input.length - 1;
@@ -60,6 +62,7 @@ public class Tuple
 		else {
 			classID = -1;
 		}
+		origValue = input[size];
 	}
 
 
@@ -125,17 +128,17 @@ public class Tuple
 	}
 
 
-	public Tuple convertToOrigTuple(int classID) {
+	public Tuple convertToOrigTuple() {
 		ArrayList<String> newVals = new ArrayList<String>();
 		for(int i = 0; i < values.length; i++) {
 			newVals.add(values[i]);
 		}
-		if(classID == 0) {
-			newVals.add("<=50K");
-		}
-		else {
-			newVals.add(">50K");
-		}
+		//if(classID == 0) {
+			newVals.add(origValue);
+		//}
+		//else {
+			//newVals.add(origValue);
+		//}
 
 
 		Tuple t = new Tuple(newVals, -1);

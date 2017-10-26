@@ -184,7 +184,7 @@ public class KAnonMethods
 		ArrayList<TaxonomyTree> output = new ArrayList<TaxonomyTree>(); //Output arraylist of taxonomy trees. Each one relates to a field
 		String id = "";
 		String input = "";
-		File file = new File("src/adult_taxonomy_tree.txt");
+		File file = new File("adult_taxonomy_tree.txt");
 		
 		try //Attempt to import file
 		{

@@ -211,6 +211,8 @@ public class TaxonomyIndexedPartitions {
 		//remove the original cut to the set of active cuts.
 		activeCuts.remove(cut);
 
+
+
 		ArrayList<ArrayList<Node>> childrenPartitionList = new ArrayList<ArrayList<Node>>();
 
 		for(int i = 0; i < cut.t.children.size(); i++) {
@@ -220,6 +222,13 @@ public class TaxonomyIndexedPartitions {
 		//For each partition P_best: (leaves that cotain the value represented by the cut)
 		while(itr.hasNext()) {
 			Node current = itr.next();
+			Iterator<Cut> cutItr = activeCuts.iterator();
+			while(cutItr.hasNext()) {
+				Cut currentCut = cutItr.next();
+				for(int i = 0; i < currentCut.children.length; i++) {
+					currentCut.children[i].leafList.remove(current);
+				}
+			}
 
 			leaf.remove(current);
 			//create a new child partition (for each child in the taxTree)
@@ -241,19 +250,16 @@ public class TaxonomyIndexedPartitions {
 				}
 			}
 
-			Iterator<Cut> cutItr = activeCuts.iterator();
+			cutItr = activeCuts.iterator();
 			//For every list of partitions if it contains the current partition then get rid of it,
 			// and replace it with the *current* partitions children
 			while(cutItr.hasNext()) {
 				Cut currentCut = cutItr.next();
-				ArrayList<Node> currentList = currentCut.leafList;
-				if(currentCut == cut) {
-					continue;
-				}
-				if(currentList.contains(current)) {
-					currentList.remove(current);
+				if(currentCut != cut && currentCut.leafList.contains(current)) {
+					currentCut.leafList.remove(current);
 					for(int j = 0; j < current.children.length; j++) {
-						currentList.add(current.children[j]);
+						currentCut.leafList.add(current.children[j]);
+
 					}
 				}
 			}

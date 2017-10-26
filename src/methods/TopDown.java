@@ -48,7 +48,7 @@ public class TopDown {
 
 
 	public long topDownAlgorithm() {
-		boolean verbose = false;
+		boolean verbose = true;
 		int j =0;
 		while(tips.checkValidityAndBenefical(kValue, verbose)) {
 			if(verbose) {
@@ -58,6 +58,7 @@ public class TopDown {
 			//prints the active cuts.
 
 			Cut bestCut = tips.getBestCut(verbose);
+			System.out.println(bestCut.leafList.get(0).tuple.toString());
 
 
 			tips.performCut(bestCut, isNumerical);

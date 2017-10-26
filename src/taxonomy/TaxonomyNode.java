@@ -113,7 +113,7 @@ public class TaxonomyNode
 		if(isNumeric) {
 			//following only works if the tree is binary.
 			String tmp = children.get(0).name;
-			if(Integer.parseInt(attribute) <= Integer.parseInt(tmp.substring(tmp.indexOf("-") + 1))) {
+			if(Integer.parseInt(attribute) <= Double.parseDouble(tmp.substring(tmp.indexOf("-") + 1))) {
 				return 0;
 			}
 			else {
@@ -139,8 +139,38 @@ public class TaxonomyNode
 	}
 
 	public void generateChildren() {
+		ArrayList<Integer> leftList = new ArrayList<>();
+		ArrayList<Integer> rightList = new ArrayList<>();
 		children = new ArrayList<>();
-		int split = numericVals[(int) Math.random() * numericVals.length];
+
+		int[] orderedArray = new int[numericVals.length];
+		for(int i = 0; i < numericVals.length; i++) {
+			orderedArray[i] = numericVals[i];
+		}
+		for(int i = 0; i < orderedArray.length - 1; i++) {
+			int smallest = orderedArray[i];
+			int index = i;
+			for(int j = i + 1; j < orderedArray.length; j++) {
+				if(orderedArray[j] < smallest) {
+					smallest = orderedArray[j];
+					index = j;
+				}
+			}
+			orderedArray[index] = orderedArray[i];
+			orderedArray[i] = smallest;
+			if(i == orderedArray.length / 2) {
+				break;
+			}
+		}
+		double split;
+		if(orderedArray.length % 2 == 0) {
+			split = orderedArray[(orderedArray.length/2) - 1] + orderedArray[orderedArray.length/2] / 2;
+		}
+		else {
+			split = orderedArray[(orderedArray.length - 1)/2];
+		}
+		System.out.println("SPLIT: " + split);
+		//int split = numericVals[(int) Math.random() * numericVals.length];
 		int min, max;
 		if(name.equals("*")) {
 			min = Integer.MAX_VALUE;
@@ -152,6 +182,12 @@ public class TaxonomyNode
 				if(numericVals[i] > max) {
 					max = numericVals[i];
 				}
+				if(numericVals[i] < split) {
+					leftList.add(numericVals[i]);
+				}
+				else {
+					rightList.add(numericVals[i]);
+				}
 			}
 		}
 		else {
@@ -161,6 +197,16 @@ public class TaxonomyNode
 			max = Integer.parseInt(right);
 		}
 		children.add(new TaxonomyNode(min + "-" + split, this));
+		int[] leftArray = new int[leftList.size()];
+		for(int i = 0; i < leftList.size(); i++) {
+			leftArray[i] = leftList.get(i);
+		}
+		children.get(0).numericVals = leftArray;
 		children.add(new TaxonomyNode((split + 1) + "-" + max, this));
+		int[] rightArray = new int[leftList.size()];
+		for(int i = 0; i < leftList.size(); i++) {
+			rightArray[i] = leftList.get(i);
+		}
+		children.get(1).numericVals = rightArray;
 	}
 }

@@ -19,7 +19,7 @@ public class Node {
     int classCount = 2;
 
     //the tuple that represents the entire set.
-    Tuple tuple;
+    public Tuple tuple;
 
 
 

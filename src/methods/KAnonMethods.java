@@ -3,13 +3,16 @@ package methods;
 import table.Tuple;
 import taxonomy.TaxonomyTree;
 
-import java.util.*;
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 public class KAnonMethods
 {
 	private static final int TABLESIZE = 10007; 
 
+	private int maxRows = -1;
 	private double dataLoss = 0;
 	private int size = 0;
 	private int k = 0;
@@ -21,11 +24,16 @@ public class KAnonMethods
 	//Postcondtion:	Object initialised
 	//Status:		Coded and efficient
 	//Written by:	Moten
-	public KAnonMethods(ArrayList<Tuple> input, int k)
+	public KAnonMethods(ArrayList<Tuple> input, int k, int _maxRows)
 	{
 		headers = input.get(0); //Store the header
+		maxRows = _maxRows;
 		table = input;
 		table.remove(0); //Remove the header from the working table
+
+		// remove extra rows if greater than -1 (no limit) and 0 (invalid)
+		if (maxRows > 0) table = new ArrayList<>(table.subList(0, maxRows));
+
 		baseTable = table;
 		outputTable = table;
 		size = table.size();
@@ -58,12 +66,13 @@ public class KAnonMethods
 		*/
 	}
 
-	public void makeKAnonMond()
+	public long makeKAnonMond()
 	{
 		BasicMondrian bm = new BasicMondrian(table, k, importTrees());
-		bm.mondrianAlgorithm();
+		long runTime = bm.mondrianAlgorithm();
 		outputTable = bm.getResults();
 		dataLoss = bm.getNcp();
+		return runTime;
 	}
 
 	//Preconditon: 	methods.KAnonMethods initialised

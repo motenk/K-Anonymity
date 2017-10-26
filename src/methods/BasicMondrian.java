@@ -483,7 +483,9 @@ public class BasicMondrian{
 			ArrayList<String> temp = p.getCurrentGeneralisation();
 			for (int i = 0; i < p.length(); i++) {
 				ArrayList<String> pTemp = new ArrayList<>(temp);
-				pTemp.add(p.getData().get(i).get(numberOfColumns));
+				for(int j = numberOfColumns; j < data.get(0).size(); j++){
+					pTemp.add(p.getData().get(i).get(j));
+				}
 				outputResults.add(new Tuple(pTemp, p.getData().get(i).getID()));
 			}
 			r_ncp *= p.length();

@@ -6,12 +6,8 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.text.DecimalFormat;
+import java.util.*;
 
 public class Privacy {
     private Map<String, List<Integer>> classes;
@@ -72,8 +68,15 @@ public class Privacy {
     }
 
     public String[] getClasses() {
-        return classes.keySet().toArray(new String[classes.size()]);
+        List<String> attr = new ArrayList<>(classes.keySet());
+        Collections.sort(attr);
+        return attr.toArray(new String[attr.size()]);
     }
+
+    public double getProbability(String cls) {
+        return probability1.get(cls);
+    }
+
 
     public double entropy(String cls) {
         double entropy = 0;
@@ -211,39 +214,41 @@ public class Privacy {
         if (temp.size() == 0)
             System.exit(1);
 
-        String[][] data = new String[temp.size() - 1][];
-        for (int i = 1; i < temp.size(); i++) {
-            data[i - 1] = temp.get(i);
+        String[][] data = new String[temp.size()][];
+        for (int i = 0; i < temp.size(); i++) {
+            data[i] = temp.get(i);
         }
 
         StringBuilder sb = new StringBuilder();
 
         Privacy privacy = new Privacy(data);
 
-        sb.append("k,").append(privacy.getClasses().length).append("\n\n");
-        sb.append("cls,H(cls)").append("\n");
+        sb.append("k,").append(privacy.getClasses().length).append("\n");
+        //sb.append("cls,H(cls)").append("\n");
 
-        for (String cls : privacy.getClasses()) {
+        /*for (String cls : privacy.getClasses()) {
             sb.append("\"" + cls + "\"").append(",").append(privacy.entropy(cls)).append("\n");
-        }
-        sb.append("H(D),").append(privacy.entropy()).append("\n");
+        }*/
+        DecimalFormat df = new DecimalFormat("#.00");
+        sb.append("H(D|cls),").append(df.format(privacy.entropy())).append("\n");
 
+        double area = 0;
         for (String cls : privacy.getClasses()) {
             double[][] h = privacy.dynamicProgramming(cls);
             if (h != null) {
-                sb.append("\n").append("\"" + cls + "\"").append("\n");
-                sb.append("e,H(e)\n");
+                //sb.append("\n").append("\"" + cls + "\"").append("\n");
+                /*sb.append("e,H(e)\n");
                 for (int i = 0; i < h.length; i++) {
                     sb.append((int) h[i][0]).append(",").append(h[i][1]).append("\n");
-                }
-                double area = 0;
+                }*/
                 for (int i = 0; i < h.length - 1; i++) {
                     int diff = Math.abs((int) h[i + 1][0] - (int) h[i][0]);
-                    area += diff * h[i][1];
+                    area += diff * h[i][1] * privacy.getProbability(cls);
                 }
-                sb.append("Area,").append(area).append("\n");
+                //sb.append("Area,").append(area).append("\n");
             }
         }
+        sb.append("Avg. Area,").append(df.format(area));
 
         try (BufferedWriter writer = Files.newBufferedWriter(FileSystems.getDefault().getPath("privacy-" + args[0]),
                 Charset.forName("UTF-8"))) {

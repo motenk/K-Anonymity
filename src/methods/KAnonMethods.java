@@ -75,6 +75,15 @@ public class KAnonMethods
 		return runTime;
 	}
 
+	public long makeKAnonTopDown()
+	{
+		TopDown td = new TopDown(table, k, importTrees());
+		long runTime = td.topDownAlgorithm();
+		outputTable = td.getResults();
+		//i dont have an inherent data loss function.
+		return runTime;
+	}
+
 	//Preconditon: 	methods.KAnonMethods initialised
 	//Postcondtion:	Output table returned
 	//Status:		Coded and efficient
@@ -184,7 +193,7 @@ public class KAnonMethods
 		ArrayList<TaxonomyTree> output = new ArrayList<TaxonomyTree>(); //Output arraylist of taxonomy trees. Each one relates to a field
 		String id = "";
 		String input = "";
-		File file = new File("adult_taxonomy_tree.txt");
+		File file = new File("src/adult_taxonomy_tree.txt");
 		
 		try //Attempt to import file
 		{

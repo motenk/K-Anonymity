@@ -15,32 +15,57 @@ public class TopDown {
 
 	TaxonomyIndexedPartitions tips;
 	int kValue;
-	int[] classes;
+	long startTime;
 
-	public TopDown(ArrayList originalTable, int kValue, ArrayList<TaxonomyTree> trees) {
+	static boolean[] isNumerical;
+
+	public TopDown(ArrayList<Tuple> originalTable, int kValue, ArrayList<TaxonomyTree> trees) {
+		isNumerical = new boolean[originalTable.get(0).size()];
+		for(int i = 0; i < originalTable.get(0).size() - 1; i++) {
+			try {
+				Integer.parseInt(originalTable.get(0).get(i));
+				isNumerical[i] = true;
+			}
+			catch (NumberFormatException e) {
+				isNumerical[i] = false;
+			}
+		}
+		ArrayList<Tuple> modTable = new ArrayList<>();
+		Iterator<Tuple> itr = originalTable.iterator();
+		while(itr.hasNext()) {
+			modTable.add(itr.next().convertToTimTuple());
+		}
+		startTime = System.currentTimeMillis();
 		this.kValue = kValue;
 		//initializes cuts.
-		tips = new TaxonomyIndexedPartitions(originalTable, trees, classes, true);
+		ArrayList<TaxonomyTree> tmpList = new ArrayList<>();
+		for(int i = 0; i < trees.size() - 1; i++) {
+			tmpList.add(trees.get(i));
+		}
+		tips = new TaxonomyIndexedPartitions(modTable, tmpList, isNumerical, false);
 	}
 
 
 
-	public void topDownAlgorithm() {
+	public long topDownAlgorithm() {
+		boolean verbose = false;
 		int j =0;
-		while(tips.checkValidityAndBeneifical(kValue, true)) {
-
-			System.out.println("------------------" + j++ + "------------------");
+		while(tips.checkValidityAndBenefical(kValue, verbose)) {
+			if(verbose) {
+				System.out.println("------------------" + j++ + "------------------");
+				tips.print();
+			}
 			//prints the active cuts.
-			tips.print();
-			Cut bestCut = tips.getBestCut(true);
+
+			Cut bestCut = tips.getBestCut(verbose);
 
 
-			tips.performCut(bestCut);
-			System.out.println("cut performed");
+			tips.performCut(bestCut, isNumerical);
+			//System.out.println("cut performed");
 
 		}
-		System.out.println("Algorithm done");
-
+		//System.out.println("Algorithm done");
+		return System.currentTimeMillis() - startTime;
 
 
 	}

@@ -34,6 +34,18 @@ public class Cut extends TaxonomyNode {
         valid = false;
     }
 
+    public Cut(TaxonomyNode rootTaxonomyNode, int attribute) {
+        t = rootTaxonomyNode;
+        leafList = new ArrayList<>();
+        if(rootTaxonomyNode.children != null) {
+            children = new Cut[rootTaxonomyNode.children.size()];
+        }
+        frequency = new int[classCount];
+        this.attribute = attribute;
+        beneficial = false;
+        valid = false;
+    }
+
     public void setList(ArrayList<Node> list) {
         leafList = list;
     }
@@ -59,14 +71,19 @@ public class Cut extends TaxonomyNode {
                 emptyFrequencyCount++;
             }
         }
-        beneficial = (emptyFrequencyCount + 1 != classCount);
+        if(emptyFrequencyCount >= classCount - 1) {
+            beneficial = false;
+        }
+        else {
+            beneficial = true;
+        }
 
-        return (emptyFrequencyCount + 1 != classCount);
+        return  beneficial;
     }
 
     public double initialiseScore(int attribute) {
         infoGain = entropy(frequency, count);
-        for(int i = 0; i < children.length; i++) {
+            for(int i = 0; i < children.length; i++) {
             infoGain -= ((double) children[i].count / (double) count) * entropy(children[i].frequency, children[i].count);
         }
 
@@ -94,7 +111,7 @@ public class Cut extends TaxonomyNode {
         else {
             score = infoGain / anonyLoss;
         }
-        valid = !(children == null || children.length == 0);
+        valid = !(t.children == null || t.children.size() == 0);
         return score;
     }
 
@@ -143,7 +160,7 @@ public class Cut extends TaxonomyNode {
 
                 Node current = itr.next();
                 int count = current.count();
-                if(count < kValue) {
+                if(count < kValue && count != 0) {
                     valid = false;
                     return valid;
                 }
@@ -151,5 +168,17 @@ public class Cut extends TaxonomyNode {
         }
         valid = true;
         return true;
+    }
+
+    public void generateChildren() {
+        if(t.children == null) {
+            children = null;
+        }
+        else {
+            children = new Cut[t.children.size()];
+            for (int i = 0; i < t.children.size(); i++) {
+                children[i] = new Cut(t.children.get(i), attribute);
+            }
+        }
     }
 }

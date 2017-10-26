@@ -33,13 +33,14 @@ public class TaxonomyIndexedPartitions {
 	//list i is related to the ith active cut.
 	//activeCuts.leafList;
 
-	public TaxonomyIndexedPartitions(ArrayList<Tuple> t, ArrayList<TaxonomyTree> trees, int[] classes, boolean verbose) {
+	public TaxonomyIndexedPartitions(ArrayList<Tuple> t, ArrayList<TaxonomyTree> trees, boolean[] isNumerical, boolean verbose) {
 		this.verbose = verbose;
 		ArrayList<String> rootTuple = new ArrayList<>();
 		for(int i = 0; i < trees.size(); i++) {
 			rootTuple.add("*");
 		}
 		root = new Node(t, new Tuple(rootTuple, -1));
+
 		activeCuts = new ArrayList<>();
 		leaf = new ArrayList<>();
 		leaf.add(root);
@@ -50,15 +51,25 @@ public class TaxonomyIndexedPartitions {
 		if(verbose) {
 			System.out.println("Current active cuts:");
 		}
-		int i = 0;
 		while(itr.hasNext()) {
-			currentRoot = itr.next().root;
-			Cut c = new Cut(currentRoot, root, i);
+			TaxonomyTree tree = itr.next();
+			currentRoot = tree.root;
+
+
+			if(isNumerical[attributeCount]) {
+				int[] vals = new int[t.size()];
+				for(int j = 0; j < t.size(); j++) {
+					vals[j] = Integer.parseInt(t.get(j).get(attributeCount));
+				}
+				currentRoot.setNumericVals(vals);
+				currentRoot.generateChildren();
+			}
+
+			Cut c = new Cut(currentRoot, root, attributeCount);
 			c.valid = true;
 			c.beneficial = true;
 			activeCuts.add(c);
 			c.getCountStats();
-
 
 			Iterator<TaxonomyNode> childItr = currentRoot.children.iterator();
 			Node[] tmpChild = new Node[currentRoot.children.size()];
@@ -67,7 +78,7 @@ public class TaxonomyIndexedPartitions {
 
 				ArrayList<String> tmpTuple = new ArrayList<>();
 				for(int k = 0; k < trees.size(); k++) {
-					if(k == i) {
+					if(k == attributeCount) {
 						tmpTuple.add(childTax.name);
 					}
 					else {
@@ -81,7 +92,7 @@ public class TaxonomyIndexedPartitions {
 
 				c.children[j] = childCut;
 			}
-			root.splitRecordsBetweenChildren(currentRoot, attributeCount, tmpChild);
+			root.splitRecordsBetweenChildren(currentRoot, attributeCount, isNumerical[attributeCount], tmpChild);
 			for(int j = 0; j < tmpChild.length; j++) {
 				if(!c.children[j].getCountStats()) {
 					//c.children[j] = null;
@@ -90,7 +101,6 @@ public class TaxonomyIndexedPartitions {
 			root.tmpChildren.add(tmpChild);
 			attributeCount++;
 
-			i++;
 		}
 
 		Iterator<Cut> cutItr = activeCuts.iterator();
@@ -103,6 +113,7 @@ public class TaxonomyIndexedPartitions {
 		if(verbose) {
 			print();
 		}
+		root.setValidCuts(activeCuts);
 	}
 
 	public void print() {
@@ -123,7 +134,7 @@ public class TaxonomyIndexedPartitions {
 
 	public Cut getBestCut(boolean verbose) {
 		Iterator<Cut> itr = activeCuts.iterator();
-		double bestScore = - Double.MAX_VALUE;
+		double bestScore = Double.MIN_VALUE;
 		Cut best = null;
 		int i = 0, j = 0;
 		while(itr.hasNext()) {
@@ -135,20 +146,35 @@ public class TaxonomyIndexedPartitions {
 			}
 			i++;
 		}
-		System.out.println("Best cut: " + j);
+		if(verbose) {
+			System.out.println("Best cut: " + j);
+			System.out.println("cuts: " + activeCuts.size());
+			System.out.println("attr: " + best.attribute);
+			System.out.println(best.children.length);
+		}
 		return best;
 	}
 
-	public boolean checkValidityAndBeneifical(int kValue, boolean verbose) {
+	public boolean checkValidityAndBenefical(int kValue, boolean verbose) {
 		for(int i = 0; i < activeCuts.size(); i++) {
 			Cut current = activeCuts.get(i);
+			current.getCountStats();
 			if (!current.valid || !current.beneficial) {
+				if(verbose) {
+					System.out.println("removing: " + i);
+					System.out.println("attr: " + current.attribute);
+					System.out.println("val: " + current.t.name);
+					System.out.println("valid: " + current.valid);
+					System.out.println("beneficial: " + current.beneficial);
+				}
 				activeCuts.remove(current);
 				i--;
+
 			}
 			else if(!current.validCheck(kValue)){
 				activeCuts.remove(current);
 				i--;
+
 			}
 		}
 		if(verbose && activeCuts.size() == 0) {
@@ -176,8 +202,8 @@ public class TaxonomyIndexedPartitions {
 	//Mark C as a beneficial cut if R_C has more than one class (ie the set of data records generalized to c)
 	//Add new set of cuts.
 	//Remove old cut.
-	public void performCut(Cut cut) {
-		int cutIndex = activeCuts.indexOf(cut);
+	public void performCut(Cut cut, boolean[] isNumeric) {
+		//int cutIndex = activeCuts.indexOf(cut);
 		//iterator over the records whose QID contain the cut
 		Iterator<Node> itr = cut.leafList.iterator();
 
@@ -194,12 +220,17 @@ public class TaxonomyIndexedPartitions {
 		//For each partition P_best: (leaves that cotain the value represented by the cut)
 		while(itr.hasNext()) {
 			Node current = itr.next();
+
 			leaf.remove(current);
 			//create a new child partition (for each child in the taxTree)
 			//sets up children & splits data records up.
+			int cutIndex = current.validCuts.indexOf(cut);
 			current.setChildren(cutIndex);
+			current.validCuts.remove(cut);
 			for(int i = 0; i < current.children.length; i++) {
 				leaf.add(current.children[i]);
+				current.children[i].setValidCuts(current.validCuts);
+				current.children[i].validCuts.add(cut.children[i]);
 			}
 			//split data records up
 
@@ -233,14 +264,14 @@ public class TaxonomyIndexedPartitions {
 
 		for(int i = 0; i < cut.children.length; i++) {
 			activeCuts.add(cut.children[i]);
+			cut.children[i].generateChildren();
 		}
 		Iterator<Node> leafIterator = leaf.iterator();
-
 		while(leafIterator.hasNext()) {
 			Node currentLeaf = leafIterator.next();
 			//generates possible children of the leaves based on the active cuts. Then splits the data into subgroups.
 			//also adds the
-			currentLeaf.generateTmpChildren(activeCuts);
+			currentLeaf.generateTmpChildren(isNumeric);
 
 			//add to possible children
 		}
@@ -248,7 +279,8 @@ public class TaxonomyIndexedPartitions {
 			activeCuts.get(i).getCountStats();
 		}
 		for(int i = 0; i < cut.children.length; i++) {
-			if(cut.children[i].valid) {
+
+			if(cut.children[i].t.children != null && cut.children[i].t.children.size() != 0) {
 				cut.children[i].initialiseScore(cut.children[i].attribute);
 			}
 		}
@@ -268,11 +300,13 @@ public class TaxonomyIndexedPartitions {
 		Iterator<Node> itr = leaf.iterator();
 		while(itr.hasNext()) {
 			Node current = itr.next();
+			int count = 0;
 			for(int i = 0; i < current.frequency.length; i++) {
+				count += current.frequency[i];
 				for(int j = 0; j < current.frequency[i]; j++) {
-					Tuple t = current.tuple.convertTuple(i);
+					Tuple t = current.tuple.convertToOrigTuple(i);
+					//System.out.println(t.toString());
 					privateTable.add(t);
-					System.out.println(t);
 				}
 			}
 		}

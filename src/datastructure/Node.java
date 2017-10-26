@@ -12,6 +12,7 @@ public class Node {
     ArrayList<Node[]> tmpChildren;
     //ArrayList<Tuple> data;
     ArrayList<Tuple> subTable;
+    ArrayList<Cut> validCuts;
 
     //array contains the frequency per class (ie the sensitive data)
     int[] frequency;
@@ -61,11 +62,11 @@ public class Node {
     //Postcondition:	Splits the data between the parent and the appropriate children based on the specialization
     //Status:			Requires implementation of record knowing what specialization it belongs to
     //Written by:		Tim
-    public void splitRecordsBetweenChildren(TaxonomyNode taxNode, int attribute, Node[] children) {
+    public void splitRecordsBetweenChildren(TaxonomyNode taxNode, int attribute, boolean isNumeric, Node[] children) {
         Iterator<Tuple> itr = subTable.iterator();
         while(itr.hasNext()) {
             Tuple current = itr.next();
-            int generalized = taxNode.specialize(current.get(attribute));
+            int generalized = taxNode.specialize(current.get(attribute), isNumeric);
             children[generalized].dataAdd(current);
         }
 
@@ -84,11 +85,12 @@ public class Node {
         return frequency;
     }
 
-    public void generateTmpChildren(ArrayList<Cut> activeCuts) {
+    public void generateTmpChildren(boolean[] isNumeric) {
         tmpChildren = new ArrayList<>();
-        Iterator<Cut> itr = activeCuts.iterator();
+        Iterator<Cut> itr = validCuts.iterator();
         while(itr.hasNext()) {
             Cut current = itr.next();
+
             Node[] tmp;
             if(current.t.children == null || current.t.children.size() == 0) {
                 tmp = null;
@@ -106,12 +108,20 @@ public class Node {
                         }
                     }
                     tmp[i] = new Node(this, new Tuple(list, -1));
+
                     current.children[i].leafList.add(tmp[i]);
                 }
-                splitRecordsBetweenChildren(current.t, current.attribute, tmp);
+                splitRecordsBetweenChildren(current.t, current.attribute, isNumeric[current.attribute], tmp);
             }
 
             tmpChildren.add(tmp);
+        }
+    }
+
+    public void setValidCuts(ArrayList<Cut> validCuts) {
+        this.validCuts = new ArrayList<>();
+        for(int i = 0; i < validCuts.size(); i++) {
+            this.validCuts.add(validCuts.get(i));
         }
     }
 }

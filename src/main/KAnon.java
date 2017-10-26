@@ -47,6 +47,7 @@ public class KAnon
 
 		System.out.println("Processing File... Please wait.");
 		long millis = System.currentTimeMillis(); // Start run timer
+		System.out.println(args[0]);
 		KAnonMethods table = new KAnonMethods(importFile(new File(args[0])), input, maxRows); //De
 
 		if (table != null)
@@ -54,8 +55,9 @@ public class KAnon
 		else
 			return;
 
-		table.makeKAnonMond();
+		table.makeKAnonTopDown();
 		ArrayList<Tuple> output = table.getOutput();
+		System.out.println("test: " + table.getCurrentK());
 
 		if (output != null) 
 		{
@@ -163,6 +165,7 @@ public class KAnon
 			output.add(new Tuple(tupleInput, id));
 			id++;
 		}
+
 		return output;
 	}
 

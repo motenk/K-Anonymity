@@ -43,7 +43,23 @@ public class Tuple
 		else {
 			classID = -1;
 		}
-		System.out.println(classID);
+	}
+	public Tuple(String[] input, int id, boolean topDown)
+	{
+		size = input.length - 1;
+		values = new String[size];
+		for (int i = 0; i < size; i++)
+			values[i] = input[i];
+		this.id = id;
+		if(Integer.parseInt(input[size]) <= 50000) {
+			classID = 0;
+		}
+		else if(Integer.parseInt(input[size]) > 50000) {
+			classID = 1;
+		}
+		else {
+			classID = -1;
+		}
 	}
 
 
@@ -109,7 +125,7 @@ public class Tuple
 	}
 
 
-	public Tuple convertTuple(int classID) {
+	public Tuple convertToOrigTuple(int classID) {
 		ArrayList<String> newVals = new ArrayList<String>();
 		for(int i = 0; i < values.length; i++) {
 			newVals.add(values[i]);
@@ -124,5 +140,9 @@ public class Tuple
 
 		Tuple t = new Tuple(newVals, -1);
 		return t;
+	}
+
+	public Tuple convertToTimTuple() {
+		return new Tuple(values, id, true);
 	}
 }

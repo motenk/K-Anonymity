@@ -379,7 +379,7 @@ public class BasicMondrian{
 		}
 		for(Tuple t : partition.getData()){
 			String qidValue = t.get(dimension).trim().toLowerCase();
-			int specialiseIndex = splitValue.specialize(qidValue);
+			int specialiseIndex = splitValue.specialize(qidValue, false);
 			if(specialiseIndex == -1){
 				System.out.println("Generalisation tree error.");
 				continue;

@@ -109,7 +109,20 @@ public class Tuple
 	}
 
 
+	public Tuple convertTuple(int classID) {
+		ArrayList<String> newVals = new ArrayList<String>();
+		for(int i = 0; i < values.length; i++) {
+			newVals.add(values[i]);
+		}
+		if(classID == 0) {
+			newVals.add("<=50K");
+		}
+		else {
+			newVals.add(">50K");
+		}
 
 
-
+		Tuple t = new Tuple(newVals, -1);
+		return t;
+	}
 }

@@ -93,10 +93,10 @@ public class Cut extends TaxonomyNode {
         while(itr.hasNext()) {
             Node current = itr.next();
             anonyLoss += current.count();
-            System.out.println("X: " + current.tuple.toString());
             if(current.tmpChildren == null) {
-                System.out.println(leafList.size());
-                System.out.println(current.tmpChildren.size());
+                while(current.tmpChildren == null) {
+                    current = itr.next();
+                }
             }
 
 

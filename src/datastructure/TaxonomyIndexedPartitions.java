@@ -228,6 +228,9 @@ public class TaxonomyIndexedPartitions {
 			leaf.remove(current);
 			//create a new child partition (for each child in the taxTree)
 			//sets up children & splits data records up.
+			if(current.validCuts == null) {
+				continue;
+			}
 			int cutIndex = current.validCuts.indexOf(cut);
 			current.setChildren(cutIndex);
 			current.validCuts.remove(cut);
@@ -250,10 +253,7 @@ public class TaxonomyIndexedPartitions {
 			// and replace it with the *current* partitions children
 			while(cutItr.hasNext()) {
 				Cut currentCut = cutItr.next();
-				if(currentCut.attribute == 3) {
-					System.out.println("OI: " + currentCut.leafList.contains(current));
-					System.out.println(currentCut.leafList.size());
-				}
+
 				if(currentCut != cut && currentCut.leafList.contains(current)) {
 					currentCut.leafList.remove(current);
 					for(int j = 0; j < current.children.length; j++) {
@@ -290,7 +290,6 @@ public class TaxonomyIndexedPartitions {
 		for(int i = 0; i < cut.children.length; i++) {
 
 			if(cut.children[i].t.children != null && cut.children[i].t.children.size() != 0) {
-				System.out.println("E: " + cut.children[i].t.children.size());
 				cut.children[i].initialiseScore(cut.children[i].attribute);
 			}
 		}

@@ -169,7 +169,6 @@ public class TaxonomyNode
 		else {
 			split = orderedArray[(orderedArray.length - 1)/2];
 		}
-		System.out.println("SPLIT: " + split);
 		//int split = numericVals[(int) Math.random() * numericVals.length];
 		int min, max;
 		if(name.equals("*")) {

@@ -12,6 +12,7 @@ public class Tuple
 	private int size;
 	private long hash;
 	private final int id;
+	private int classID;
 
 	//Preconditon: 	Valid array list of string input
 	//Postcondtion:	table.Tuple initialised
@@ -25,6 +26,45 @@ public class Tuple
 			values[i] = input.get(i);
 		this.id = id;
 	}
+
+	public Tuple(ArrayList<String> input, int id, boolean topDown)
+	{
+		size = input.size();
+		values = new String[size];
+		for (int i = 0; i < size - 1; i++)
+			values[i] = input.get(i);
+		this.id = id;
+		if(input.get(size - 1).equals("<=50K")) {
+			classID = 0;
+		}
+		else if(input.get(size - 1).equals(">50K")) {
+			classID = 1;
+		}
+		else {
+			classID = -1;
+		}
+	}
+	public Tuple(String[] input, int id, boolean topDown)
+	{
+		size = input.length - 1;
+		values = new String[size];
+		for (int i = 0; i < size; i++)
+			values[i] = input[i];
+		this.id = id;
+		if(Integer.parseInt(input[size]) <= 50000) {
+			classID = 0;
+		}
+		else if(Integer.parseInt(input[size]) > 50000) {
+			classID = 1;
+		}
+		else {
+			classID = -1;
+		}
+	}
+
+
+
+
 
 	//Preconditon: 	table.Tuple initialised
 	//Postcondtion:	Value of field i returned
@@ -80,13 +120,29 @@ public class Tuple
 		return size;
 	}
 
-	//determine which member of the children is the appropriate match for the data value
-	//Precondition:
-	//Postcondition:	Return the generalized value in the attribute field, in terms of the options provided in treeChildren.
-	//Status:			Note done.
-	//Written by:		Tim
-	public int specialize(int attribute, Iterator<TaxonomyNode> treeChildren) {
-		return -1;
+	public int getClassID() {
+		return classID;
 	}
 
+
+	public Tuple convertToOrigTuple(int classID) {
+		ArrayList<String> newVals = new ArrayList<String>();
+		for(int i = 0; i < values.length; i++) {
+			newVals.add(values[i]);
+		}
+		if(classID == 0) {
+			newVals.add("<=50K");
+		}
+		else {
+			newVals.add(">50K");
+		}
+
+
+		Tuple t = new Tuple(newVals, -1);
+		return t;
+	}
+
+	public Tuple convertToTimTuple() {
+		return new Tuple(values, id, true);
+	}
 }

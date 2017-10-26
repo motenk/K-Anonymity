@@ -2,9 +2,16 @@ package main;
 
 import methods.KAnonMethods;
 import table.Tuple;
+import util.RunTime;
 
-import java.util.*;
-import java.io.*; 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.InputMismatchException;
+import java.util.Scanner;
 
 public class KAnon
 {
@@ -36,17 +43,19 @@ public class KAnon
 
 		}
 
+		int maxRows = -1; //no limit
+
 		System.out.println("Processing File... Please wait.");
 		long millis = System.currentTimeMillis(); // Start run timer
-		KAnonMethods table = new KAnonMethods(importFile(new File(args[0])), input); //De
-
-		table.makeKAnon();
-		ArrayList<Tuple> output = table.getOutput();
+		KAnonMethods table = new KAnonMethods(importFile(new File(args[0])), input, maxRows); //De
 
 		if (table != null)
 			System.out.println("File successfully imported! Current K-Anonymous Value: "+table.getCurrentK());
 		else
 			return;
+
+		table.makeKAnonMond();
+		ArrayList<Tuple> output = table.getOutput();
 
 		if (output != null) 
 		{
@@ -63,6 +72,61 @@ public class KAnon
 		double runtime = (System.currentTimeMillis()-millis)/1000.0;
 		System.out.println("Total run time: "+runtime+" seconds");
 		System.out.println("Program Complete. Exiting.");
+	}
+
+	public void runAnalysis(String filename) {
+			int maxRows = 5;
+
+		int k = 5;
+
+		ArrayList<Tuple> data;
+
+			File file = new File("shuffled_" + filename);
+			if (file.exists()) {
+				data = importFile(file);
+			}
+			else {
+				data = importFile(new File(filename));
+				Tuple header = data.remove(0);
+				Collections.shuffle(data);
+				data.add(0, header);
+				outputFile(data, "shuffled_"+filename);
+				filename = "shuffled_"+filename;
+				// data is now shuffled and matches file
+			}
+
+
+
+
+
+//		System.out.println("Processing File... Please wait.");
+//			long millis = System.currentTimeMillis(); // Start run timer
+
+		ArrayList<RunTime> runList = new ArrayList<>();
+		int scaleFactor = 10;
+		int repeatCount = 20;
+		for (int i = scaleFactor; i <= 100; i+=scaleFactor) {
+			double runningtimeAvg = 0;
+			for (int repeats = 0; repeats < repeatCount; repeats++){
+				double blockQty = (i / 100.0);
+				System.out.println("scale: "+blockQty*100+"%");
+				maxRows = (int) Math.floor(data.size() * blockQty);
+				if (maxRows >= data.size()) maxRows -= 1;
+				KAnonMethods table = new KAnonMethods(data, k, maxRows); //De
+				//			if (table != null)
+				//				System.out.println("File successfully imported! Current K-Anonymous Value: "+table.getCurrentK());
+				//			else
+				//				return;
+				long runningtime = table.makeKAnonMond();
+				//			ArrayList<Tuple> output = table.getOutput();
+				runningtimeAvg += runningtime;
+			}
+			runningtimeAvg = runningtimeAvg / repeatCount;
+			RunTime runTime = new RunTime("shuffled_"+filename, k, maxRows, (long)runningtimeAvg);
+			System.out.println(runTime);
+			runList.add(runTime);
+		}
+		outputFile(runList, scaleFactor+"-"+repeatCount+"-analysis_"+filename);
 	}
 
 	//Preconditon: 	Valid CSV file
@@ -106,7 +170,7 @@ public class KAnon
 	//Postcondtion:	K-Anonymous saved to file
 	//Status:		Coded and efficient
 	//Written by:	Moten
-	private static boolean outputFile(ArrayList<Tuple> input, String title)
+	private static boolean outputFile(ArrayList input, String title)
 	{
 		try
 		{

@@ -3,13 +3,16 @@ package methods;
 import table.Tuple;
 import taxonomy.TaxonomyTree;
 
-import java.util.*;
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 public class KAnonMethods
 {
 	private static final int TABLESIZE = 10007; 
 
+	private int maxRows = -1;
 	private double dataLoss = 0;
 	private int size = 0;
 	private int k = 0;
@@ -21,11 +24,16 @@ public class KAnonMethods
 	//Postcondtion:	Object initialised
 	//Status:		Coded and efficient
 	//Written by:	Moten
-	public KAnonMethods(ArrayList<Tuple> input, int k)
+	public KAnonMethods(ArrayList<Tuple> input, int k, int _maxRows)
 	{
 		headers = input.get(0); //Store the header
+		maxRows = _maxRows;
 		table = input;
 		table.remove(0); //Remove the header from the working table
+
+		// remove extra rows if greater than -1 (no limit) and 0 (invalid)
+		if (maxRows > 0) table = new ArrayList<>(table.subList(0, maxRows));
+
 		baseTable = table;
 		outputTable = table;
 		size = table.size();
@@ -58,6 +66,15 @@ public class KAnonMethods
 		*/
 	}
 
+	public long makeKAnonMond()
+	{
+		BasicMondrian bm = new BasicMondrian(table, k, importTrees());
+		long runTime = bm.mondrianAlgorithm();
+		outputTable = bm.getResults();
+		dataLoss = bm.getNcp();
+		return runTime;
+	}
+
 	//Preconditon: 	methods.KAnonMethods initialised
 	//Postcondtion:	Output table returned
 	//Status:		Coded and efficient
@@ -83,8 +100,6 @@ public class KAnonMethods
 				hashes[hash] = temp;
 			else
 				hashes[hash].addHash(temp);
-
-			
 		}
 
 		for (int i = 0; i < TABLESIZE; i++)
@@ -117,7 +132,6 @@ public class KAnonMethods
 	//Written by:	Moten
 	public double getDataLoss()
 	{
-		evaluateDataLoss();
 		return dataLoss;
 	}
 
@@ -128,15 +142,6 @@ public class KAnonMethods
 	public Tuple getTuple(int i)
 	{
 		return table.get(i);
-	}
-
-	//Preconditon: 	makeKAnon() run at least once
-	//Postcondtion:	Data loss calculated and stored in object
-	//Status:		Incomplete
-	//Written by:	
-	private void evaluateDataLoss() 
-	{
-		dataLoss = 0;
 	}
 
 	//Preconditon: 	methods.KAnonMethods initialised
@@ -200,22 +205,27 @@ public class KAnonMethods
 			if (line.hasNext())
 			{
 				id = line.next();
-				if (id.charAt(0) == '$')
+				if (id.charAt(0) == '$' || !line.hasNext())
 					break;
+
 				input = line.next();
 
 				id = id.replaceAll("\\s+","");
 				input = input.replaceAll("[{=}]","");
 				if (input.charAt(0) == '*')
 				{
-					output.add(new TaxonomyTree(id, input.substring(1)));
+					output.add(new TaxonomyTree("*", input.substring(1)));
 				}
 				else
 				{
 					output.get(output.size()-1).addNode(id, input);
 				}
 			}
-		}
+		}/*
+		for (TaxonomyTree t : output) 
+		{
+			System.out.println(t.print());
+		}*/
 		return output;
 	}
 

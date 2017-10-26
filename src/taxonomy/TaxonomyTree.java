@@ -31,6 +31,11 @@ public class TaxonomyTree
 	{
 		return root;
 	}
+    
+    public TaxonomyNode getNode(String input)
+	{
+		return root.getNode(input);
+	}
 
 	public String print()
 	{

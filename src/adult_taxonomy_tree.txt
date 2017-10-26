@@ -1,3 +1,33 @@
+	age:*{0}
+
+employer:*{government,non-government,none,?}
+	government:={federal-gov,local-gov,state-gov}
+	non-government:={private,self-emp-inc,self-emp-not-inc}
+	none:={never-worked,without-pay}
+
+education:*{pre-primary,pre-high-school,pre-university,pre-doctorate,post-doctorate}
+	pre-primary:={preschool,1st-4th,5th-6th}
+	pre-high-school:={7th-8th,9th,10th,11th,12th}
+	pre-university:={hs-grad,some-college}
+	pre-doctorate:={bachelors,masters}
+	post-doctorate:={prof-school,assoc-voc,doctorate,assoc-acdm}
+
+marriage:*{married,not-married}
+	married:={married-af-spouse,married-civ-spouse,married-spouse-absent,separated}
+	not-married:={divorced,widowed,never-married}
+
+job:*{manual-labour,professional,customer-service,government,other-service,?}
+	manual-labour:={skilled,unskilled}
+		skilled:={craft-repair,machine-op-inspct}
+		unskilled:={farming-fishing,handlers-cleaners,priv-house-serv,transport-moving}
+	professional:={exec-managerial,prof-specialty}
+	customer-service:={adm-clerical,sales,tech-support}
+	government:={armed-forces,protective-serv}
+
+race:*{amer-indian-eskimo,asian-pac-islander,black,white,other}
+
+gender:*{male,female}
+
 country:*{asia,north-america,south-america,africa,europe,?}
 	asia:={north-asia,east-asia,central-asia,middle-asia,south-asia,southeast-asia,southwest-asia,west-asia}
 		southeast-asia:={cambodia,hong-kong,laos,philippines,thailand,vietnam}
@@ -7,7 +37,7 @@ country:*{asia,north-america,south-america,africa,europe,?}
 	north-america:={southern-north-america,central-north-america,northern-north-america,northeastern-north-america,caribbean,outlying-us(guam-usvi-etc)}
 		northern-north-america:={canada}
 		central-north-america:={columbia,united-states}
-		caribbean:={cuba,dominican-republic,haiti,jamaica,puerto-rico,trinidad&tobago}
+		caribbean:={cuba,dominican-republic,haiti,jamaica,puerto-rico,trinadad&tobago}
 		southern-north-america:={el-salvador,guatemala,honduras,mexico,nicaragua}
 	south-america:={north-south-america,northeast-south-america,east-south-america,southwest-south-america}
 		north-south-america:={ecuador}
@@ -19,33 +49,7 @@ country:*{asia,north-america,south-america,africa,europe,?}
 		southern-europe:={greece,italy,portugal}
 		eastern-europe:={hungary,poland,yugoslavia}
 
-race:*{amer-indian-eskimo,asian-pac-islander,black,white,other}
-
-gender:*{male,female}
-
-marriage:*{married,not-married}
-	married:={married-af-spouse,married-civ-spouse,married-spouse-absent,separated}
-	not-married:={divorced,widowed,never-married}
-
-education:*{pre-primary,pre-high-school,pre-university,pre-doctorate,post-doctorate}
-	pre-primary:={preschool,1st-4th,5th-6th}
-	pre-highschool:={7th-8th,9th,10th,11th,12th}
-	pre-university:={hs-grad,some-college}
-	pre-doctorate:={bachelors,masters}
-	post-doctorate:={prof-school,assoc-voc,doctorate,assoc-acdm}
-
-employer:*{government,non-government,none,?}
-	government:={federal-gov,local-gov,state-gov}
-	non-government:={private,self-emp-inc,self-emp-not-inc}
-	none:={never-worked,without-pay}
-
-job:*{manual-labour,professional,customer-service,government,other-service,?}
-	manual-labour:={skilled,unskilled}
-		skilled:={craft-repair,machine-op-inspct}
-		unskilled:={farming-fishing,handlers-cleaners,priv-house-serv,transport-moving}
-	professional:={exec-managerial,prof-specialty}
-	customer-service:={adm-clerical,sales,tech-support}
-	government:={armed-forces,protective-serv}
+salary:*{0}
 
 $ <- Break Character
 Notes about structure:

@@ -16,7 +16,7 @@ public class TaxonomyNode
         name = null;
     }
 
-    public TaxonomyNode(String id)
+	public TaxonomyNode(String id)
 	{
 		name = id;
 		children = null;
@@ -61,7 +61,10 @@ public class TaxonomyNode
 	}
 
 	public Iterator<TaxonomyNode> childrenIterator() {
-		return children.iterator();
+		if(children == null)
+			return null;
+		else
+			return children.iterator();
 	}
 
 	public int childrenSize() {
@@ -83,6 +86,21 @@ public class TaxonomyNode
 		return output;
 	}
 
+    public TaxonomyNode getNode(String input)
+    {
+        if (input.equals(name.toLowerCase()))
+            return this;
+        if (children == null)
+            return null;
+        for (int i = 0; i < children.size(); i++)
+        {
+			TaxonomyNode output = children.get(i).getNode(input);
+			if (output != null)
+				return output;
+        }
+        return null;
+    }
+
 	/**
 	 * Returns the nth child which the record specializes to.
 	 * This should be made better.
@@ -90,17 +108,15 @@ public class TaxonomyNode
 	 * @attr the attribute that is being specialized on.
 	 */
 	public int specialize(String attribute) {
+		Iterator<TaxonomyNode> itr = null;
+		if(children != null)
+			itr = children.iterator();
+		int i = 0;
 		if(attribute.equals(name)) {
 			return 0;
 		}
-		if(children == null) {
-			return -1;
-		}
-		Iterator<TaxonomyNode> itr = children.iterator();
-		int i = 0;
-
-		while(itr.hasNext()) {
-			if(itr.next().specialize(attribute) == 0) {
+		while(itr != null && itr.hasNext()) {
+			if(itr.next().specialize(attribute) != -1) {
 				return i;
 			}
 			i++;

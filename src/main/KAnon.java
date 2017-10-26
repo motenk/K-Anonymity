@@ -4,7 +4,7 @@ import methods.KAnonMethods;
 import table.Tuple;
 
 import java.util.*;
-import java.io.*;
+import java.io.*; 
 
 public class KAnon
 {
@@ -38,6 +38,7 @@ public class KAnon
 
 		System.out.println("Processing File... Please wait.");
 		long millis = System.currentTimeMillis(); // Start run timer
+
 		KAnonMethods table = new KAnonMethods(importFile(new File(args[0])), input); //De
 
 		if (table != null)
@@ -47,6 +48,7 @@ public class KAnon
 
 		table.makeKAnonTopDown();
 		ArrayList<Tuple> output = table.getOutput();
+		System.out.println("test: " + table.getCurrentK());
 
 		if (output != null) 
 		{
@@ -99,6 +101,7 @@ public class KAnon
 			output.add(new Tuple(tupleInput, id));
 			id++;
 		}
+
 		return output;
 	}
 

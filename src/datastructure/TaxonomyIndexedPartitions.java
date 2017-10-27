@@ -320,6 +320,7 @@ public class TaxonomyIndexedPartitions {
 			}*/
 			for(int i = 0; i < current.subTable.size(); i++) {
 				Tuple t = current.subTable.get(i).convertToOrigTuple();
+				privateTable.add(t);
 			}
 
 		}

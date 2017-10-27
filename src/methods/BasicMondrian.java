@@ -28,6 +28,8 @@ import taxonomy.TaxonomyNode;
 import java.util.*;
 import java.util.stream.IntStream;
 
+import javax.management.monitor.StringMonitor;
+
 public class BasicMondrian{
 	//widths int array defines the indices of the smalled and largest numbers in the range of a partition
 	//attributeRanges has an arraylist for each attribute storing the complete range of the attribute (numeric)
@@ -241,7 +243,7 @@ public class BasicMondrian{
 		}
 		int middle = total/2;
 		if(middle < k || valueList.size() <= 1){
-			partition.setMedian("", "", valueList.get(0), valueList.get(valueList.size()-1));
+			partition.setMedian("", "", valueList.get(0), valueList.get(valueList.size()-1), dimension);
 			return;
 		}
 
@@ -251,7 +253,7 @@ public class BasicMondrian{
 		String nextValue = "";
 		for (int i = 0; i < valueList.size(); i++) {
 			index += frequency.get(valueList.get(i));
-			if(index >= middle){
+			if(index > k && total - index > k){
 				splitValue = valueList.get(i);
 				splitIndex = i;
 				foundSplit = true;
@@ -261,12 +263,13 @@ public class BasicMondrian{
 		if(!foundSplit){
 			System.out.println("Can't find split value...");
 		}
+
 		if(splitIndex != valueList.size()-1)
 			nextValue = valueList.get(splitIndex+1);
 		else{
 			nextValue = valueList.get(splitIndex);
 		}
-		partition.setMedian(splitValue, nextValue, valueList.get(0), valueList.get(valueList.size()-1));
+		partition.setMedian(splitValue, nextValue, valueList.get(0), valueList.get(valueList.size()-1), dimension);
 		return;
 	}
 
@@ -305,10 +308,10 @@ public class BasicMondrian{
 	private ArrayList<Partition> splitNumerical(Partition partition, int dimension, int[][] partitionWidth, ArrayList<String> partitionMiddle){
 		ArrayList<Partition> subPartitions = new ArrayList<Partition>();
 		findMedian(partition, dimension);
-		String splitValue = partition.getSplitValue();
-		String nextValue = partition.getNextValue();
-		String lowValue = partition.getLowestValue();
-		String highValue = partition.getHighestValue();
+		String splitValue = partition.getSplitValue(dimension);
+		String nextValue = partition.getNextValue(dimension);
+		String lowValue = partition.getLowestValue(dimension);
+		String highValue = partition.getHighestValue(dimension);
 		int partitionLow = attributeRanges.get(dimension).indexOf(Integer.parseInt(lowValue));
 		int partitionHigh = attributeRanges.get(dimension).indexOf(Integer.parseInt(highValue));
 		if(lowValue.equals(highValue)){
@@ -491,6 +494,22 @@ public class BasicMondrian{
 			r_ncp *= p.length();
 			ncp += r_ncp;
 		}
+		HashMap<String, Integer> classes = new HashMap<String, Integer>();
+		for(Tuple tuple : outputResults){
+			String temp = "";
+			for(int i = 0; i < numberOfColumns; i++){
+				temp += tuple.get(i);
+			}
+			if(classes.containsKey(temp))
+					classes.put(temp, classes.get(temp)+1);
+			else
+				classes.put(temp, 1);
+		}
+		int index = 1;
+		for(String s : classes.keySet()){
+			System.out.println(index + " " + classes.get(s));
+			index++;
+		}
 		ncp /= numberOfColumns;
 		ncp /= data.size();
 		ncp *= 100;
@@ -520,10 +539,10 @@ public class BasicMondrian{
 		private ArrayList<Tuple> data;
 		private ArrayList<String> currentGeneralisation;
 		private int[] splittable;
-		private String splitValue;
-		private String nextValue;
-		private String lowestValue;
-		private String highestValue;
+		private String[] splitValue = new String[numberOfColumns];
+		private String[] nextValue = new String[numberOfColumns];
+		private String[] lowestValue = new String[numberOfColumns];
+		private String[] highestValue = new String[numberOfColumns];
 		//Preconditon: 	valid data, widths, generalisation, numberofcols passed in
 		//Postcondtion:	Valid partition object initialised
 		//Status:		Coded and efficient
@@ -580,43 +599,43 @@ public class BasicMondrian{
 		//Postcondtion:	partition's split, next, lowest and highest values set
 		//Status:		Coded and efficient
 		//Written by:	Chris
-		private void setMedian(String splitValue, String nextValue, String lowestValue, String highestValue){
-			this.splitValue = splitValue;
-			this.nextValue = nextValue;
-			this.lowestValue = lowestValue;
-			this.highestValue = highestValue;
+		private void setMedian(String splitValue, String nextValue, String lowestValue, String highestValue, int dimension){
+			this.splitValue[dimension] = splitValue;
+			this.nextValue[dimension] = nextValue;
+			this.lowestValue[dimension] = lowestValue;
+			this.highestValue[dimension] = highestValue;
 		}
 
 		//Preconditon: 	setMedian has been called
 		//Postcondtion:	splitValue string returned
 		//Status:		Coded and efficient
 		//Written by:	Chris
-		private String getSplitValue(){
-			return splitValue;
+		private String getSplitValue(int dimension){
+			return splitValue[dimension];
 		}
 
 		//Preconditon: 	setMedian has been called
 		//Postcondtion:	nextValue string returned
 		//Status:		Coded and efficient
 		//Written by:	Chris
-		private String getNextValue(){
-			return nextValue;
+		private String getNextValue(int dimension){
+			return nextValue[dimension];
 		}
 
 		//Preconditon: 	setMedian has been called
 		//Postcondtion:	lowestValue string returned
 		//Status:		Coded and efficient
 		//Written by:	Chris
-		private String getLowestValue(){
-			return lowestValue;
+		private String getLowestValue(int dimension){
+			return lowestValue[dimension];
 		}
 
 		//Preconditon: 	setMedian has been called
 		//Postcondtion:	highestValue string returned
 		//Status:		Coded and efficient
 		//Written by:	Chris
-		private String getHighestValue(){
-			return highestValue;
+		private String getHighestValue(int dimension){
+			return highestValue[dimension];
 		}
 	}
 }

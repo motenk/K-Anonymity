@@ -128,7 +128,7 @@ public class Tuple
 	}
 
 
-	public Tuple convertToOrigTuple() {
+	public Tuple convertToOrigTuple(String origValue) {
 		ArrayList<String> newVals = new ArrayList<String>();
 		for(int i = 0; i < values.length; i++) {
 			newVals.add(values[i]);
@@ -147,5 +147,9 @@ public class Tuple
 
 	public Tuple convertToTimTuple() {
 		return new Tuple(values, id, true);
+	}
+
+	public String getOrigVal() {
+		return origValue;
 	}
 }

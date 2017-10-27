@@ -311,15 +311,19 @@ public class TaxonomyIndexedPartitions {
 			Node current = itr.next();
 			int count = 0;
 			/*for(int i = 0; i < current.frequency.length; i++) {
-				/*count += current.frequency[i];
+				count += current.frequency[i];
 				for(int j = 0; j < current.frequency[i]; j++) {
-					Tuple t = current.tuple.convertToOrigTuple(i);
+					for(int k = 0; k < current.subTable.size(); k++) {
+						String orig = current.subTable.get(i).convert
+					}
+					Tuple t = current.tuple.convertToOrigTuple(current.);
 					//System.out.println(t.toString());
 					privateTable.add(t);
 				}
 			}*/
 			for(int i = 0; i < current.subTable.size(); i++) {
-				Tuple t = current.subTable.get(i).convertToOrigTuple();
+				//Tuple t = current.subTable.get(i).convertToOrigTuple();
+				Tuple t = current.tuple.convertToOrigTuple(current.subTable.get(i).getOrigVal());
 				privateTable.add(t);
 			}
 

@@ -494,22 +494,6 @@ public class BasicMondrian{
 			r_ncp *= p.length();
 			ncp += r_ncp;
 		}
-		HashMap<String, Integer> classes = new HashMap<String, Integer>();
-		for(Tuple tuple : outputResults){
-			String temp = "";
-			for(int i = 0; i < numberOfColumns; i++){
-				temp += tuple.get(i);
-			}
-			if(classes.containsKey(temp))
-					classes.put(temp, classes.get(temp)+1);
-			else
-				classes.put(temp, 1);
-		}
-		int index = 1;
-		for(String s : classes.keySet()){
-			System.out.println(index + " " + classes.get(s));
-			index++;
-		}
 		ncp /= numberOfColumns;
 		ncp /= data.size();
 		ncp *= 100;

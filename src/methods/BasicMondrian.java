@@ -30,6 +30,8 @@ import java.util.stream.IntStream;
 
 import javax.management.monitor.StringMonitor;
 
+import sun.util.resources.cldr.ss.CalendarData_ss_SZ;
+
 public class BasicMondrian{
 	//widths int array defines the indices of the smalled and largest numbers in the range of a partition
 	//attributeRanges has an arraylist for each attribute storing the complete range of the attribute (numeric)
@@ -494,6 +496,27 @@ public class BasicMondrian{
 			r_ncp *= p.length();
 			ncp += r_ncp;
 		}
+		HashMap<String, Integer> classes = new HashMap<String, Integer>();
+		for(Tuple tuple : outputResults){
+			String temp = "";
+			for(int i = 0; i < numberOfColumns; i++){
+				temp += tuple.get(i);
+			}
+			if(classes.containsKey(temp))
+					classes.put(temp, classes.get(temp)+1);
+			else
+				classes.put(temp, 1);
+		}
+		double index = 0;
+		int minNumber = Integer.MAX_VALUE;
+		for(String s : classes.keySet()){
+			index += classes.get(s);
+			if(classes.get(s) < minNumber)
+				minNumber = classes.get(s);
+		}
+		
+		System.out.println("Average class size: " + index/classes.size());
+		System.out.println("Actual K value: " + minNumber);
 		ncp /= numberOfColumns;
 		ncp /= data.size();
 		ncp *= 100;

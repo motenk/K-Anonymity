@@ -322,7 +322,7 @@ public class TaxonomyIndexedPartitions {
 					privateTable.add(t);
 				}
 			}*/
-			System.out.println(current.tuple.toString() + " "  + current.count());
+			//System.out.println(current.tuple.toString() + " "  + current.count());
 			for(int i = 0; i < current.subTable.size(); i++) {
 				//Tuple t = current.subTable.get(i).convertToOrigTuple();
 				Tuple t = current.tuple.convertToOrigTuple(current.subTable.get(i).getOrigVal());

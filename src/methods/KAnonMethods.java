@@ -78,7 +78,7 @@ public class KAnonMethods
 	{
 		TopDown td = new TopDown(table, k, importTrees());
 		Performance perf = td.topDownAlgorithm();
-		perf.setAverageClassSize(td.generateAverageClassValue(table));
+		perf.setAverageClassSize(td.generateAverageClassValue());
 		outputTable = td.getResults();
 		//i dont have an inherent data loss function.
 		return perf;

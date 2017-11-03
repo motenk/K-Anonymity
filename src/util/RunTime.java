@@ -38,13 +38,13 @@ public class RunTime {
     @Override public String toString() {
         return "{" +
             "\"method\":" + (method == null ? "null" : "\"" + method + "\"") + ", " +
-            "\"k\":\"" + k + "\"" + ", " +
-            "\"runtime\":\"" + runtime + "\"" + ", " +
             "\"filename\":" + (filename == null ? "null" : "\"" + filename + "\"") + ", " +
             "\"maxRows\":\"" + maxRows + "\"" + ", " +
+            "\"k\":\"" + k + "\"" + ", " +
+            "\"measuredK\":\"" + measuredK + "\"" + ", " +
+            "\"runtime\":\"" + runtime + "\"" + ", " +
             "\"ncp\":\"" + ncp + "\"" + ", " +
-            "\"averageClassSize\":\"" + averageClassSize + "\"" + ", " +
-            "\"measuredK\":\"" + measuredK + "\"" +
+            "\"averageClassSize\":\"" + averageClassSize + "\"" +
             "}";
     }
 }

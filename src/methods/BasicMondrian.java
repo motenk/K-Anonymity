@@ -28,10 +28,6 @@ import taxonomy.TaxonomyTree;
 import java.util.*;
 import java.util.stream.IntStream;
 
-import javax.management.monitor.StringMonitor;
-
-import sun.util.resources.cldr.ss.CalendarData_ss_SZ;
-
 public class BasicMondrian{
 	//widths int array defines the indices of the smalled and largest numbers in the range of a partition
 	//attributeRanges has an arraylist for each attribute storing the complete range of the attribute (numeric)
@@ -278,7 +274,7 @@ public class BasicMondrian{
 		else{
 			nextValue = valueList.get(splitIndex);
 		}
-		partition.setMedian(splitValue, nextValue, valueList.get(0), valueList.get(valueList.size()-1));
+		partition.setMedian(splitValue, nextValue, valueList.get(0), valueList.get(valueList.size()-1), dimension);
 		return;
 	}
 
@@ -391,7 +387,7 @@ public class BasicMondrian{
 		}
 		for(Tuple t : partition.getData()){
 			String qidValue = t.get(dimension).trim().toLowerCase();
-			int specialiseIndex = splitValue.specialize(qidValue, false);
+			int specialiseIndex = splitValue.specialize(qidValue);
 			if(specialiseIndex == -1){
 				System.out.println("Generalisation tree error.");
 				continue;

@@ -17,16 +17,20 @@ public class KAnonMethods
 	private ArrayList<Tuple> table, outputTable, baseTable;
 	private Tuple headers;
 	private String taxonomyName;
+	private int maxRows = -1;
 
 	//Preconditon: 	Valid ArrayList of tuples given as input
 	//Postcondtion:	Object initialised
 	//Status:		Coded and efficient
 	//Written by:	Moten
-	public KAnonMethods(ArrayList<Tuple> input, int k, String taxonomyName)
+	public KAnonMethods(ArrayList<Tuple> input, int k, String taxonomyName, int _maxRows)
 	{
+		maxRows = _maxRows;
 		headers = input.get(0); //Store the header
 		table = input;
 		table.remove(0); //Remove the header from the working table
+		// remove extra rows if greater than -1 (no limit) and 0 (invalid)
+		if (maxRows > 0) table = new ArrayList<>(table.subList(0, maxRows));
 		baseTable = table;
 		outputTable = table;
 		size = table.size();
@@ -60,12 +64,13 @@ public class KAnonMethods
 		*/
 	}
 
-	public void makeKAnonMond()
+	public long makeKAnonMond()
 	{
 		BasicMondrian bm = new BasicMondrian(table, k, importTrees());
-		bm.mondrianAlgorithm();
+		long runTime = bm.mondrianAlgorithm();
 		outputTable = bm.getResults();
 		dataLoss = bm.getNcp();
+		return runTime;
 	}
 
 	public long makeKAnonTopDown()

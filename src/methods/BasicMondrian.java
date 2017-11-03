@@ -21,16 +21,12 @@ Anonymise(partition)
 
 package methods;
 
-import table.Table;
 import table.Tuple;
-import taxonomy.TaxonomyTree;
 import taxonomy.TaxonomyNode;
+import taxonomy.TaxonomyTree;
+
 import java.util.*;
 import java.util.stream.IntStream;
-
-import javax.management.monitor.StringMonitor;
-
-import sun.util.resources.cldr.ss.CalendarData_ss_SZ;
 
 public class BasicMondrian{
 	//widths int array defines the indices of the smalled and largest numbers in the range of a partition
@@ -471,7 +467,7 @@ public class BasicMondrian{
 	//Postcondtion:	ArrayList of generalised tuples set
 	//Status:		Coded and efficient
 	//Written by:	Chris
-	public void mondrianAlgorithm(){
+	public long mondrianAlgorithm(){
 		ArrayList<String> middleTemp = new ArrayList<>();
 		for (int i = 0; i < numberOfColumns; i++) {
 			if(!isCategorical[i]){
@@ -538,6 +534,7 @@ public class BasicMondrian{
 		ncp /= numberOfColumns;
 		ncp /= data.size();
 		ncp *= 100;
+		return runtime;
 	}
 
 	//Preconditon: 	Mondrian algorithm has run, ncp calc'd

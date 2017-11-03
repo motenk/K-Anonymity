@@ -74,10 +74,8 @@ public class KAnon
 		System.out.println("Program Complete. Exiting.");
 	}
 
-	public void runAnalysis(String filename) {
+	public void runAnalysis(String filename, int k, int repeatCount) {
 			int maxRows = 5;
-
-		int k = 5;
 
 		ArrayList<Tuple> data;
 
@@ -96,18 +94,17 @@ public class KAnon
 			}
 
 
-
-
-
 //		System.out.println("Processing File... Please wait.");
 //			long millis = System.currentTimeMillis(); // Start run timer
 
 		ArrayList<RunTime> runList = new ArrayList<>();
 		int scaleFactor = 10;
-		int repeatCount = 20;
+
 		for (int i = scaleFactor; i <= 100; i+=scaleFactor) {
+			System.out.println("\n\n** New scale factor");
 			double runningtimeAvg = 0;
 			for (int repeats = 0; repeats < repeatCount; repeats++){
+				System.out.println("\n");
 				double blockQty = (i / 100.0);
 				System.out.println("scale: "+blockQty*100+"%");
 				maxRows = (int) Math.floor(data.size() * blockQty);
@@ -126,7 +123,7 @@ public class KAnon
 			System.out.println(runTime);
 			runList.add(runTime);
 		}
-		outputFile(runList, scaleFactor+"-"+repeatCount+"-analysis_"+filename);
+		outputFile(runList, "sc"+scaleFactor+"-re"+repeatCount+"-k"+k+"-analysis_"+filename);
 	}
 
 	//Preconditon: 	Valid CSV file

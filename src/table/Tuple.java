@@ -1,8 +1,6 @@
 package table;
 
-import taxonomy.TaxonomyNode;
-
-import java.util.*;
+import java.util.ArrayList;
 
 public class Tuple
 {
@@ -49,6 +47,7 @@ public class Tuple
 	public Tuple(String[] input, int id, boolean topDown, double middleVal)
 	{
 		size = input.length - 1;
+		input[size] = input[size].trim();
 		values = new String[size];
 		for (int i = 0; i < size; i++)
 			values[i] = input[i];

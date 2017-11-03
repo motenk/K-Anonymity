@@ -24,6 +24,7 @@ package methods;
 import table.Tuple;
 import taxonomy.TaxonomyNode;
 import taxonomy.TaxonomyTree;
+import util.Performance;
 
 import java.util.*;
 import java.util.stream.IntStream;
@@ -467,7 +468,7 @@ public class BasicMondrian{
 	//Postcondtion:	ArrayList of generalised tuples set
 	//Status:		Coded and efficient
 	//Written by:	Chris
-	public long mondrianAlgorithm(){
+	public Performance mondrianAlgorithm(){
 		ArrayList<String> middleTemp = new ArrayList<>();
 		for (int i = 0; i < numberOfColumns; i++) {
 			if(!isCategorical[i]){
@@ -534,7 +535,8 @@ public class BasicMondrian{
 		ncp /= numberOfColumns;
 		ncp /= data.size();
 		ncp *= 100;
-		return runtime;
+
+		return new Performance(ncp, index/classes.size(), minNumber, runtime);
 	}
 
 	//Preconditon: 	Mondrian algorithm has run, ncp calc'd

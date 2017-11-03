@@ -5,11 +5,13 @@ package methods;
 import datastructure.Cut;
 import datastructure.TaxonomyIndexedPartitions;
 import table.Table;
-import taxonomy.TaxonomyTree;
-import taxonomy.TaxonomyNode;
-
-import java.util.*;
 import table.Tuple;
+import taxonomy.TaxonomyNode;
+import taxonomy.TaxonomyTree;
+import util.Performance;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 
 public class TopDown {
 
@@ -50,7 +52,8 @@ public class TopDown {
 
 
 
-	public long topDownAlgorithm() {
+	public Performance topDownAlgorithm() {
+		Performance perf = new Performance();
 		boolean verbose = false;
 		int j =0;
 		while(tips.checkValidityAndBenefical(kValue, verbose)) {
@@ -68,7 +71,9 @@ public class TopDown {
 
 		}
 		//System.out.println("Algorithm done");
-		return System.currentTimeMillis() - startTime;
+		perf.setRuntime(System.currentTimeMillis() - startTime);
+
+		return perf;
 
 
 	}

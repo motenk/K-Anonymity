@@ -2,6 +2,7 @@ package main;
 
 import methods.KAnonMethods;
 import table.Tuple;
+import util.Performance;
 import util.RunTime;
 
 import java.io.File;
@@ -81,7 +82,12 @@ public class KAnon
 
 		for (int i = scaleFactor; i <= 100; i+=scaleFactor) {
 			System.out.println("\n\n** New scale factor");
-			double runningtimeAvg = 0;
+
+			double runningtime_avg = 0;
+			double ncp_avg = 0;
+			double averageClassSize_avg = 0;
+			int measuredK_avg = 0;
+
 			for (int repeats = 0; repeats < repeatCount; repeats++){
 				System.out.println("\n"+method);
 				double blockQty = (i / 100.0);
@@ -90,19 +96,26 @@ public class KAnon
 				if (maxRows >= data.size()) maxRows -= 1;
 
 				KAnonMethods table = new KAnonMethods(data, k, filename_taxonomy, maxRows); //De
-				long runningtime = -1;
+
+				Performance perf = new Performance();
 				if (method.equals("KAnon")) {
-					runningtime = table.makeKAnonMond();
+					perf = table.makeKAnonMond();
 				}
 				else if (method.equals("TopDown")) {
-					runningtime = table.makeKAnonTopDown();
+					perf = table.makeKAnonTopDown();
 				}
 
-				//			ArrayList<Tuple> output = table.getOutput();
-				runningtimeAvg += runningtime;
+				runningtime_avg += perf.getRuntime();
+				ncp_avg += perf.getNcp();
+				averageClassSize_avg += perf.getAverageClassSize();
+				measuredK_avg += perf.getMeasuredK();
 			}
-			runningtimeAvg = runningtimeAvg / repeatCount;
-			RunTime runTime = new RunTime(method, "shuffled_"+filename, k, maxRows, (long)runningtimeAvg);
+			runningtime_avg /= repeatCount;
+			ncp_avg /= repeatCount;
+			averageClassSize_avg /= repeatCount;
+			measuredK_avg /= repeatCount;
+
+			RunTime runTime = new RunTime(method, "shuffled_"+filename, k, maxRows, (long)runningtime_avg, ncp_avg, averageClassSize_avg, measuredK_avg);
 			System.out.println(runTime);
 			runList.add(runTime);
 		}

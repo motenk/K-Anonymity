@@ -2,6 +2,7 @@ package methods;
 
 import table.Tuple;
 import taxonomy.TaxonomyTree;
+import util.Performance;
 
 import java.util.*;
 import java.io.*;
@@ -64,22 +65,23 @@ public class KAnonMethods
 		*/
 	}
 
-	public long makeKAnonMond()
+	public Performance makeKAnonMond()
 	{
 		BasicMondrian bm = new BasicMondrian(table, k, importTrees());
-		long runTime = bm.mondrianAlgorithm();
+		Performance perf = bm.mondrianAlgorithm();
 		outputTable = bm.getResults();
 		dataLoss = bm.getNcp();
-		return runTime;
+		return perf;
 	}
 
-	public long makeKAnonTopDown()
+	public Performance makeKAnonTopDown()
 	{
 		TopDown td = new TopDown(table, k, importTrees());
-		long runTime = td.topDownAlgorithm();
+		Performance perf = td.topDownAlgorithm();
+		perf.setAverageClassSize(td.generateAverageClassValue(table));
 		outputTable = td.getResults();
 		//i dont have an inherent data loss function.
-		return runTime;
+		return perf;
 	}
 
 	//Preconditon: 	methods.KAnonMethods initialised

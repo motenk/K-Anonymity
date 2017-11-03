@@ -332,4 +332,16 @@ public class TaxonomyIndexedPartitions {
 		}
 		return privateTable;
 	}
+	
+	public int getActualK() {
+		Iterator<Node> itr = leaf.iterator();
+		int smallestK = Integer.MAX_VALUE;
+		while(itr.hasNext()) {
+			Node current = itr.next();
+			if(current.count() < smallestK) {
+				smallestK = current.count();
+			}
+		}
+		return smallestK;
+	}
 }

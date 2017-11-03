@@ -266,7 +266,7 @@ public class BasicMondrian{
 			foundSplit = true;
 		}
 		if(!foundSplit){
-			System.out.println("Can't find split value...");
+//			System.out.println("Can't find split value...");
 		}
 
 		if(splitIndex != valueList.size()-1)

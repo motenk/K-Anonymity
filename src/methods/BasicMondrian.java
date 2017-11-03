@@ -21,16 +21,12 @@ Anonymise(partition)
 
 package methods;
 
-import table.Table;
 import table.Tuple;
-import taxonomy.TaxonomyTree;
 import taxonomy.TaxonomyNode;
+import taxonomy.TaxonomyTree;
+
 import java.util.*;
 import java.util.stream.IntStream;
-
-import javax.management.monitor.StringMonitor;
-
-import sun.util.resources.cldr.ss.CalendarData_ss_SZ;
 
 public class BasicMondrian{
 	//widths int array defines the indices of the smalled and largest numbers in the range of a partition
@@ -245,7 +241,7 @@ public class BasicMondrian{
 		}
 		int middle = total/2;
 		if(middle < k || valueList.size() <= 1){
-			partition.setMedian("", "", valueList.get(0), valueList.get(valueList.size()-1), dimension);
+			partition.setMedian("", "", valueList.get(0), valueList.get(valueList.size()-1));
 			return;
 		}
 
@@ -255,7 +251,7 @@ public class BasicMondrian{
 		String nextValue = "";
 		for (int i = 0; i < valueList.size(); i++) {
 			index += frequency.get(valueList.get(i));
-			if(index > k && total - index > k){
+			if(index >= middle){
 				splitValue = valueList.get(i);
 				splitIndex = i;
 				foundSplit = true;
@@ -265,13 +261,12 @@ public class BasicMondrian{
 		if(!foundSplit){
 			System.out.println("Can't find split value...");
 		}
-
 		if(splitIndex != valueList.size()-1)
 			nextValue = valueList.get(splitIndex+1);
 		else{
 			nextValue = valueList.get(splitIndex);
 		}
-		partition.setMedian(splitValue, nextValue, valueList.get(0), valueList.get(valueList.size()-1), dimension);
+		partition.setMedian(splitValue, nextValue, valueList.get(0), valueList.get(valueList.size()-1));
 		return;
 	}
 
@@ -310,10 +305,10 @@ public class BasicMondrian{
 	private ArrayList<Partition> splitNumerical(Partition partition, int dimension, int[][] partitionWidth, ArrayList<String> partitionMiddle){
 		ArrayList<Partition> subPartitions = new ArrayList<Partition>();
 		findMedian(partition, dimension);
-		String splitValue = partition.getSplitValue(dimension);
-		String nextValue = partition.getNextValue(dimension);
-		String lowValue = partition.getLowestValue(dimension);
-		String highValue = partition.getHighestValue(dimension);
+		String splitValue = partition.getSplitValue();
+		String nextValue = partition.getNextValue();
+		String lowValue = partition.getLowestValue();
+		String highValue = partition.getHighestValue();
 		int partitionLow = attributeRanges.get(dimension).indexOf(Integer.parseInt(lowValue));
 		int partitionHigh = attributeRanges.get(dimension).indexOf(Integer.parseInt(highValue));
 		if(lowValue.equals(highValue)){
@@ -384,7 +379,7 @@ public class BasicMondrian{
 		}
 		for(Tuple t : partition.getData()){
 			String qidValue = t.get(dimension).trim().toLowerCase();
-			int specialiseIndex = splitValue.specialize(qidValue, false);
+			int specialiseIndex = splitValue.specialize(qidValue);
 			if(specialiseIndex == -1){
 				System.out.println("Generalisation tree error.");
 				continue;
@@ -463,8 +458,9 @@ public class BasicMondrian{
 	//Preconditon: 	BasicMondrian object validly initialised
 	//Postcondtion:	ArrayList of generalised tuples set
 	//Status:		Coded and efficient
-	//Written by:	Chris
-	public void mondrianAlgorithm(){
+	//Return: execution time in ms
+	//Written by:	Chris & Scott
+	public long mondrianAlgorithm(){
 		ArrayList<String> middleTemp = new ArrayList<>();
 		for (int i = 0; i < numberOfColumns; i++) {
 			if(!isCategorical[i]){
@@ -496,30 +492,10 @@ public class BasicMondrian{
 			r_ncp *= p.length();
 			ncp += r_ncp;
 		}
-		HashMap<String, Integer> classes = new HashMap<String, Integer>();
-		for(Tuple tuple : outputResults){
-			String temp = "";
-			for(int i = 0; i < numberOfColumns; i++){
-				temp += tuple.get(i);
-			}
-			if(classes.containsKey(temp))
-					classes.put(temp, classes.get(temp)+1);
-			else
-				classes.put(temp, 1);
-		}
-		double index = 0;
-		int minNumber = Integer.MAX_VALUE;
-		for(String s : classes.keySet()){
-			index += classes.get(s);
-			if(classes.get(s) < minNumber)
-				minNumber = classes.get(s);
-		}
-		
-		System.out.println("Average class size: " + index/classes.size());
-		System.out.println("Actual K value: " + minNumber);
 		ncp /= numberOfColumns;
 		ncp /= data.size();
 		ncp *= 100;
+		return runtime;
 	}
 
 	//Preconditon: 	Mondrian algorithm has run, ncp calc'd
@@ -546,10 +522,10 @@ public class BasicMondrian{
 		private ArrayList<Tuple> data;
 		private ArrayList<String> currentGeneralisation;
 		private int[] splittable;
-		private String[] splitValue = new String[numberOfColumns];
-		private String[] nextValue = new String[numberOfColumns];
-		private String[] lowestValue = new String[numberOfColumns];
-		private String[] highestValue = new String[numberOfColumns];
+		private String splitValue;
+		private String nextValue;
+		private String lowestValue;
+		private String highestValue;
 		//Preconditon: 	valid data, widths, generalisation, numberofcols passed in
 		//Postcondtion:	Valid partition object initialised
 		//Status:		Coded and efficient
@@ -606,43 +582,43 @@ public class BasicMondrian{
 		//Postcondtion:	partition's split, next, lowest and highest values set
 		//Status:		Coded and efficient
 		//Written by:	Chris
-		private void setMedian(String splitValue, String nextValue, String lowestValue, String highestValue, int dimension){
-			this.splitValue[dimension] = splitValue;
-			this.nextValue[dimension] = nextValue;
-			this.lowestValue[dimension] = lowestValue;
-			this.highestValue[dimension] = highestValue;
+		private void setMedian(String splitValue, String nextValue, String lowestValue, String highestValue){
+			this.splitValue = splitValue;
+			this.nextValue = nextValue;
+			this.lowestValue = lowestValue;
+			this.highestValue = highestValue;
 		}
 
 		//Preconditon: 	setMedian has been called
 		//Postcondtion:	splitValue string returned
 		//Status:		Coded and efficient
 		//Written by:	Chris
-		private String getSplitValue(int dimension){
-			return splitValue[dimension];
+		private String getSplitValue(){
+			return splitValue;
 		}
 
 		//Preconditon: 	setMedian has been called
 		//Postcondtion:	nextValue string returned
 		//Status:		Coded and efficient
 		//Written by:	Chris
-		private String getNextValue(int dimension){
-			return nextValue[dimension];
+		private String getNextValue(){
+			return nextValue;
 		}
 
 		//Preconditon: 	setMedian has been called
 		//Postcondtion:	lowestValue string returned
 		//Status:		Coded and efficient
 		//Written by:	Chris
-		private String getLowestValue(int dimension){
-			return lowestValue[dimension];
+		private String getLowestValue(){
+			return lowestValue;
 		}
 
 		//Preconditon: 	setMedian has been called
 		//Postcondtion:	highestValue string returned
 		//Status:		Coded and efficient
 		//Written by:	Chris
-		private String getHighestValue(int dimension){
-			return highestValue[dimension];
+		private String getHighestValue(){
+			return highestValue;
 		}
 	}
 }

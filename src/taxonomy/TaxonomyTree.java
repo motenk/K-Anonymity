@@ -3,7 +3,7 @@ package taxonomy;
 public class TaxonomyTree
 {
 	//used to describe the current position for the 
-	public TaxonomyNode root;
+	private TaxonomyNode root;
 
 	public TaxonomyTree()
 	{

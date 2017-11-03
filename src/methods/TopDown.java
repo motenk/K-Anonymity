@@ -18,12 +18,24 @@ public class TopDown {
 	TaxonomyIndexedPartitions tips;
 	int kValue;
 	long startTime;
+	//originalTable
+	private ArrayList<Tuple> data;
+	private int numberOfColumns;
+	private int[][] widths;
+	private ArrayList<ArrayList<Integer>> attributeRanges;
+	private ArrayList<TaxonomyTree> attributeTrees;
 
 	static boolean[] isNumerical;
 
 	public TopDown(ArrayList<Tuple> originalTable, int kValue, ArrayList<TaxonomyTree> trees) {
-		isNumerical = new boolean[originalTable.get(0).size()];
-		for(int i = 0; i < originalTable.get(0).size() - 1; i++) {
+		attributeTrees = trees;
+		data = originalTable;
+		numberOfColumns = data.get(0).size();
+		widths = new int[numberOfColumns][2];
+		attributeRanges = new ArrayList<ArrayList<Integer>>();
+
+		isNumerical = new boolean[numberOfColumns];
+		for(int i = 0; i < numberOfColumns - 1; i++) {
 			try {
 				Integer.parseInt(originalTable.get(0).get(i));
 				isNumerical[i] = true;
@@ -48,6 +60,7 @@ public class TopDown {
 			tmpList.add(trees.get(i));
 		}
 		tips = new TaxonomyIndexedPartitions(modTable, tmpList, isNumerical, false);
+		setRangesAndWidths();
 	}
 
 
@@ -75,9 +88,19 @@ public class TopDown {
 		perf.setRuntime(System.currentTimeMillis() - startTime);
 		perf.setMeasuredK(tips.getActualK());
 
+		double ncp = 0.0;
+		double r_ncp = 0.0;
+		for (int i = 0; i < numberOfColumns; i++) {
+			r_ncp += getNormalisedWidth(i);
+		}
+		r_ncp *= data.size();
+		ncp += r_ncp;
+//		ncp /= numberOfColumns;
+//		ncp /= data.size();
+//		ncp *= 100;
+		perf.setNcp(ncp);
+
 		return perf;
-
-
 	}
 
 	//not completed.
@@ -100,6 +123,82 @@ public class TopDown {
 			count++;
 		}
 		return (total / count);
+	}
+
+	//Preconditon: 	BasicMondrian object valid initialisation
+	//Postcondtion:	Ranges of numeric attributes and number of nodes of categorical attributes calculated and stored
+	//				Widths (range indices of smallest and largest values - numeric/number of nodes - categorical) calculated and stored
+	//Status:		Coded and efficient
+	//Written by:	Chris
+	private void setRangesAndWidths(){
+		int maximumValue = 0;
+		int minimumValue = Integer.MAX_VALUE;
+		for (int i = 0; i < numberOfColumns; i++) {
+			attributeRanges.add(new ArrayList<Integer>());
+			if(isNumerical[i]){
+				for (int j = 0; j < data.size(); j++) {
+					int tempPotentialMax = Integer.parseInt(data.get(j).get(i));
+					if(tempPotentialMax > maximumValue)
+						maximumValue = tempPotentialMax;
+					if(tempPotentialMax < minimumValue)
+						minimumValue = tempPotentialMax;
+				}
+				for (int j = minimumValue; j <= maximumValue; j++) {
+					attributeRanges.get(i).add(j);
+				}
+				widths[i][0] = 0;
+				widths[i][1] = attributeRanges.get(i).size()-1;
+			}
+			else{
+				maximumValue = countLeafNodes(i);
+				attributeRanges.get(i).add(maximumValue);
+				widths[i][0] = maximumValue;
+			}
+		}
+	}
+	//Preconditon: 	Attribute trees initialised
+	//Postcondtion:	Number of leaf nodes returned
+	//Status:		Coded and efficient
+	//Written by:	Chris
+	private int countLeafNodes(int index){
+		TaxonomyNode root = attributeTrees.get(index).getRoot();
+		return countLeafNodesRecursive(root);
+	}
+
+	//Preconditon: 	Attribute trees initialised
+	//Postcondtion:	Number of leaf nodes calculated and returned
+	//Status:		Coded and efficient
+	//Written by:	Chris
+	private int countLeafNodesRecursive(TaxonomyNode root){
+		if(root.childrenIterator() == null){
+			return 1;
+		}
+		else{
+			int num = 0;
+			Iterator<TaxonomyNode> iterator = root.childrenIterator();
+			while(iterator.hasNext()){
+				num += countLeafNodesRecursive(iterator.next());
+			}
+			return num;
+		}
+	}
+
+	//Preconditon: 	attributeRanges calculated, isCategorical calculated, widths calculated, valid partition parameter, valid index
+	//Postcondtion:	Return normalised width of passed in partition on dimension passed in
+	//Status:		Coded and efficient
+	//Written by:	Chris
+	private double getNormalisedWidth(int index){
+		double width;
+		if(isNumerical[index]){
+			int lowBoundIndex = widths[index][0];
+			int highBoundIndex = widths[index][1];
+			width = attributeRanges.get(index).get(highBoundIndex) - attributeRanges.get(index).get(lowBoundIndex);
+			return width / (attributeRanges.get(index).get(attributeRanges.get(index).size()-1) - attributeRanges.get(index).get(0));
+		}
+		else{
+			width = widths[index][0];
+			return width / (attributeRanges.get(index).get(attributeRanges.get(index).size()-1));
+		}
 	}
 
 

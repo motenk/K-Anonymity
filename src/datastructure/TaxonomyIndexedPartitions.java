@@ -344,4 +344,18 @@ public class TaxonomyIndexedPartitions {
 		}
 		return smallestK;
 	}
+	
+	public double getAverageK() {
+		Iterator<Node> itr = leaf.iterator();
+		double count = 0;
+		double total = 0;
+		while(itr.hasNext()) {
+			Node current = itr.next();
+			if(current.count() != 0) {
+				total += current.count();
+				count++;
+			}
+		}
+		return (total / count);
+	}
 }

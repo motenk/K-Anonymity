@@ -121,7 +121,7 @@ public class TaxonomyNode
 			}
 		}
 		int i = 0;
-		if(attribute.toLowerCase().equals(name)) {
+		if(attribute.toLowerCase().equals(name) || attribute.toLowerCase().substring(1).equals(name)) {
 			return 0;
 		}
 		while(itr != null && itr.hasNext()) {

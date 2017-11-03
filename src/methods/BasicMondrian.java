@@ -21,10 +21,10 @@ Anonymise(partition)
 
 package methods;
 
-import table.Table;
 import table.Tuple;
-import taxonomy.TaxonomyTree;
 import taxonomy.TaxonomyNode;
+import taxonomy.TaxonomyTree;
+
 import java.util.*;
 import java.util.stream.IntStream;
 
@@ -270,7 +270,7 @@ public class BasicMondrian{
 			foundSplit = true;
 		}
 		if(!foundSplit){
-//			System.out.println("Can't find split value...");
+			System.out.println("Can't find split value...");
 		}
 
 		if(splitIndex != valueList.size()-1)
@@ -278,7 +278,7 @@ public class BasicMondrian{
 		else{
 			nextValue = valueList.get(splitIndex);
 		}
-		partition.setMedian(splitValue, nextValue, valueList.get(0), valueList.get(valueList.size()-1), dimension);
+		partition.setMedian(splitValue, nextValue, valueList.get(0), valueList.get(valueList.size()-1));
 		return;
 	}
 
@@ -470,8 +470,9 @@ public class BasicMondrian{
 	//Preconditon: 	BasicMondrian object validly initialised
 	//Postcondtion:	ArrayList of generalised tuples set
 	//Status:		Coded and efficient
-	//Written by:	Chris
-	public void mondrianAlgorithm(){
+	//Return: execution time in ms
+	//Written by:	Chris & Scott
+	public long mondrianAlgorithm(){
 		ArrayList<String> middleTemp = new ArrayList<>();
 		for (int i = 0; i < numberOfColumns; i++) {
 			if(!isCategorical[i]){
@@ -538,6 +539,7 @@ public class BasicMondrian{
 		ncp /= numberOfColumns;
 		ncp /= data.size();
 		ncp *= 100;
+		return runtime;
 	}
 
 	//Preconditon: 	Mondrian algorithm has run, ncp calc'd

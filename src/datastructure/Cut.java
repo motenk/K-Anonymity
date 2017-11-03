@@ -81,7 +81,7 @@ public class Cut extends TaxonomyNode {
         return  beneficial;
     }
 
-    public double initialiseScore(int attribute) {
+    public double initialiseScore() {
         infoGain = entropy(frequency, count);
             for(int i = 0; i < children.length; i++) {
             infoGain -= ((double) children[i].count / (double) count) * entropy(children[i].frequency, children[i].count);
@@ -99,8 +99,7 @@ public class Cut extends TaxonomyNode {
                 }
             }
 
-
-            Node[] currentChildren = current.tmpChildren.get(attribute);
+            Node[] currentChildren = current.tmpChildren.get(current.validCuts.indexOf(this));
             int smallest = Integer.MAX_VALUE;
             for(int i = 0; i < currentChildren.length; i++) {
                 if(currentChildren[i].count() < smallest) {

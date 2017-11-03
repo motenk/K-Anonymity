@@ -30,10 +30,13 @@ public class TopDown {
 				isNumerical[i] = false;
 			}
 		}
+		//The middlevalue of the sensitive data.
+		double middleVal = generateAverageClassValue(originalTable);
+		System.out.println(middleVal);
 		ArrayList<Tuple> modTable = new ArrayList<>();
 		Iterator<Tuple> itr = originalTable.iterator();
 		while(itr.hasNext()) {
-			modTable.add(itr.next().convertToTimTuple());
+			modTable.add(itr.next().convertToTimTuple(middleVal));
 		}
 		startTime = System.currentTimeMillis();
 		this.kValue = kValue;
@@ -48,7 +51,7 @@ public class TopDown {
 
 
 	public long topDownAlgorithm() {
-		boolean verbose = false;
+		boolean verbose = true;
 		int j =0;
 		while(tips.checkValidityAndBenefical(kValue, verbose)) {
 			if(verbose) {
@@ -74,6 +77,18 @@ public class TopDown {
 	public ArrayList<Tuple> getResults() {
 		ArrayList<Tuple> table = tips.getPrivateTable();
 		return table;
+	}
+
+	public double generateAverageClassValue(ArrayList<Tuple> t) {
+		int classIndex = t.get(0).size() - 1;
+		Iterator<Tuple> itr = t.iterator();
+		double total = 0;
+		double count = 0;
+		while(itr.hasNext()) {
+			total += Double.parseDouble(itr.next().get(classIndex));
+			count++;
+		}
+		return (total / count);
 	}
 
 

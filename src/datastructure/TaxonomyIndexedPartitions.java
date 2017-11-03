@@ -105,15 +105,16 @@ public class TaxonomyIndexedPartitions {
 
 		Iterator<Cut> cutItr = activeCuts.iterator();
 		int j = 0;
+		root.setValidCuts(activeCuts);
 		while(cutItr.hasNext()) {
 			Cut current = cutItr.next();
-			current.initialiseScore(j);
+			current.initialiseScore();
 			j++;
 		}
 		if(verbose) {
 			print();
 		}
-		root.setValidCuts(activeCuts);
+		
 	}
 
 	public void print() {
@@ -124,7 +125,7 @@ public class TaxonomyIndexedPartitions {
 			System.out.println(j);
 			System.out.println("attribute: " + current.attribute);
 			System.out.println("representation: " + current.t.name);
-			System.out.println("score: " + current.initialiseScore(j));
+			System.out.println("score: " + current.initialiseScore());
 			System.out.println("List size: " + current.leafList.size());
 			System.out.println("count: " + current.count);
 			System.out.println("------------------------------------------");
@@ -290,7 +291,7 @@ public class TaxonomyIndexedPartitions {
 		for(int i = 0; i < cut.children.length; i++) {
 
 			if(cut.children[i].t.children != null && cut.children[i].t.children.size() != 0) {
-				cut.children[i].initialiseScore(cut.children[i].attribute);
+				cut.children[i].initialiseScore();
 			}
 		}
 		for(int i = 0; i < activeCuts.size(); i++) {
@@ -321,6 +322,7 @@ public class TaxonomyIndexedPartitions {
 					privateTable.add(t);
 				}
 			}*/
+			System.out.println(current.tuple.toString() + " "  + current.count());
 			for(int i = 0; i < current.subTable.size(); i++) {
 				//Tuple t = current.subTable.get(i).convertToOrigTuple();
 				Tuple t = current.tuple.convertToOrigTuple(current.subTable.get(i).getOrigVal());

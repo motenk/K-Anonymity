@@ -46,17 +46,17 @@ public class Tuple
 		}
 	}
 	//use only in convertTimTuple
-	public Tuple(String[] input, int id, boolean topDown)
+	public Tuple(String[] input, int id, boolean topDown, double middleVal)
 	{
 		size = input.length - 1;
 		values = new String[size];
 		for (int i = 0; i < size; i++)
 			values[i] = input[i];
 		this.id = id;
-		if(Integer.parseInt(input[size]) <= 50000) {
+		if(Integer.parseInt(input[size]) <= middleVal) {
 			classID = 0;
 		}
-		else if(Integer.parseInt(input[size]) > 50000) {
+		else if(Integer.parseInt(input[size]) > middleVal) {
 			classID = 1;
 		}
 		else {
@@ -145,8 +145,8 @@ public class Tuple
 		return t;
 	}
 
-	public Tuple convertToTimTuple() {
-		return new Tuple(values, id, true);
+	public Tuple convertToTimTuple(double middleVal) {
+		return new Tuple(values, id, true, middleVal);
 	}
 
 	public String getOrigVal() {

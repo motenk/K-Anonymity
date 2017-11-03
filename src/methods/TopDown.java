@@ -71,6 +71,7 @@ public class TopDown {
 
 		}
 		//System.out.println("Algorithm done");
+		System.out.println("average k: " + tips.getAverageK());
 		perf.setRuntime(System.currentTimeMillis() - startTime);
 
 		return perf;

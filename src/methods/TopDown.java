@@ -33,7 +33,7 @@ public class TopDown {
 			}
 		}
 		//The middlevalue of the sensitive data.
-		double middleVal = generateAverageClassValue(originalTable);
+		double middleVal = calcMiddleVal(originalTable);
 		System.out.println(middleVal);
 		ArrayList<Tuple> modTable = new ArrayList<>();
 		Iterator<Tuple> itr = originalTable.iterator();
@@ -73,6 +73,7 @@ public class TopDown {
 		//System.out.println("Algorithm done");
 		System.out.println("average k: " + tips.getAverageK());
 		perf.setRuntime(System.currentTimeMillis() - startTime);
+		perf.setMeasuredK(tips.getActualK());
 
 		return perf;
 
@@ -85,7 +86,11 @@ public class TopDown {
 		return table;
 	}
 
-	public double generateAverageClassValue(ArrayList<Tuple> t) {
+	public double generateAverageClassValue() {
+		return tips.getAverageK();
+	}
+
+	public double calcMiddleVal(ArrayList<Tuple> t) {
 		int classIndex = t.get(0).size() - 1;
 		Iterator<Tuple> itr = t.iterator();
 		double total = 0;

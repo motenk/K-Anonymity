@@ -253,17 +253,24 @@ public class BasicMondrian{
 		int splitIndex = 0;
 		boolean foundSplit = false;
 		String nextValue = "";
+		int tempIndex = -1;
+		int tempDifference = Integer.MAX_VALUE;
 		for (int i = 0; i < valueList.size(); i++) {
 			index += frequency.get(valueList.get(i));
 			if(index > k && total - index > k){
-				splitValue = valueList.get(i);
-				splitIndex = i;
-				foundSplit = true;
-				break;
+				if(Math.abs(middle-index) < tempDifference){
+					tempDifference = Math.abs(middle-index);
+					tempIndex = i;
+				}
 			}
 		}
+		if(tempIndex != -1){
+			splitValue = valueList.get(tempIndex);
+			splitIndex = tempIndex;
+			foundSplit = true;
+		}
 		if(!foundSplit){
-			System.out.println("Can't find split value...");
+//			System.out.println("Can't find split value...");
 		}
 
 		if(splitIndex != valueList.size()-1)
@@ -497,6 +504,7 @@ public class BasicMondrian{
 			ncp += r_ncp;
 		}
 		HashMap<String, Integer> classes = new HashMap<String, Integer>();
+		HashMap<String, Integer> countries = new HashMap<String, Integer>();
 		for(Tuple tuple : outputResults){
 			String temp = "";
 			for(int i = 0; i < numberOfColumns; i++){
@@ -507,6 +515,13 @@ public class BasicMondrian{
 			else
 				classes.put(temp, 1);
 		}
+//		for(Tuple tuple : data){
+//			String temp = tuple.get(7);
+//			if(countries.containsKey(temp))
+//				countries.put(temp, countries.get(temp)+1);
+//			else
+//				countries.put(temp, 1);
+//		}
 		double index = 0;
 		int minNumber = Integer.MAX_VALUE;
 		for(String s : classes.keySet()){
@@ -514,9 +529,12 @@ public class BasicMondrian{
 			if(classes.get(s) < minNumber)
 				minNumber = classes.get(s);
 		}
-		
+//		for(String s : countries.keySet()){
+//			System.out.println(s + ": " + countries.get(s));
+//		}
 		System.out.println("Average class size: " + index/classes.size());
 		System.out.println("Actual K value: " + minNumber);
+
 		ncp /= numberOfColumns;
 		ncp /= data.size();
 		ncp *= 100;

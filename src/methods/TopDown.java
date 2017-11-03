@@ -51,7 +51,7 @@ public class TopDown {
 
 
 	public long topDownAlgorithm() {
-		boolean verbose = false;
+		boolean verbose = true;
 		int j =0;
 		while(tips.checkValidityAndBenefical(kValue, verbose)) {
 			if(verbose) {

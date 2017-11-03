@@ -338,7 +338,7 @@ public class TaxonomyIndexedPartitions {
 		int smallestK = Integer.MAX_VALUE;
 		while(itr.hasNext()) {
 			Node current = itr.next();
-			if(current.count() < smallestK) {
+			if(current.count() < smallestK && current.count() != 0) {
 				smallestK = current.count();
 			}
 		}

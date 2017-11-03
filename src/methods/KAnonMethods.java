@@ -16,12 +16,13 @@ public class KAnonMethods
 	private int currentK = 0;
 	private ArrayList<Tuple> table, outputTable, baseTable;
 	private Tuple headers;
+	private String taxonomyName;
 
 	//Preconditon: 	Valid ArrayList of tuples given as input
 	//Postcondtion:	Object initialised
 	//Status:		Coded and efficient
 	//Written by:	Moten
-	public KAnonMethods(ArrayList<Tuple> input, int k)
+	public KAnonMethods(ArrayList<Tuple> input, int k, String taxonomyName)
 	{
 		headers = input.get(0); //Store the header
 		table = input;
@@ -30,6 +31,7 @@ public class KAnonMethods
 		outputTable = table;
 		size = table.size();
 		this.k = k;
+		this.taxonomyName = taxonomyName;
 	}
 
 	//Preconditon: 	methods.KAnonMethods initialised
@@ -184,7 +186,7 @@ public class KAnonMethods
 		ArrayList<TaxonomyTree> output = new ArrayList<TaxonomyTree>(); //Output arraylist of taxonomy trees. Each one relates to a field
 		String id = "";
 		String input = "";
-		File file = new File("adult_taxonomy_tree.txt");
+		File file = new File(taxonomyName);
 		
 		try //Attempt to import file
 		{

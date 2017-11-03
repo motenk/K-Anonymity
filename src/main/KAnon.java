@@ -15,31 +15,13 @@ public class KAnon
 	public static void main(String[] args) 
 	{
 		Scanner scanner = new Scanner(System.in); 
-		boolean flag = false;
-		int input = 0;
 
-		while (!flag) //Get K-Value
-		{
-			try
-			{
-				System.out.println("Please enter a value for K:");
-				input = scanner.nextInt();
-				if (input < 50 && input > 0)
-					break;
-			}
-			catch (InputMismatchException e)
-			{
-				System.out.println("Invalid input! Please try again.");
-				scanner.next();
-				continue;
-			}
 
-		}
 
 		System.out.println("Processing File... Please wait.");
 		long millis = System.currentTimeMillis(); // Start run timer
 
-		KAnonMethods table = new KAnonMethods(importFile(new File(args[0])), input); //De
+		KAnonMethods table = new KAnonMethods(importFile(new File(args[0])), Integer.parseInt(args[1]), args[3]); //De
 
 		if (table != null)
 			System.out.println("File successfully imported! Current K-Anonymous Value: "+table.getCurrentK());
@@ -52,8 +34,7 @@ public class KAnon
 		if (output != null) 
 		{
 			System.out.println("Table Processed! Data Loss Value: "+table.getDataLoss()+"%");
-			String[] parts = args[0].split("\\.");
-			if(outputFile(output, (parts[0]+"_output.csv")))
+			if(outputFile(output, args[2]))
 				System.out.println("File successfully ouput!");
 			else
 				System.out.println("File failed to ouput!");

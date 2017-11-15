@@ -93,14 +93,23 @@ public class TopDown {
 
 		double ncp = 0.0;
 		double r_ncp = 0.0;
-		for (int i = 0; i < numberOfColumns; i++) {
-			r_ncp += getNormalisedWidth(i);
+//		for (int i = 0; i < numberOfColumns; i++) {
+//			r_ncp += getNormalisedWidth(i);
+//		}
+		for(Tuple t : tips.getPrivateTable()){
+			for(int i = 0; i < numberOfColumns-1; i++){
+				if(t.get(i).equals("*")){
+					r_ncp += 1;
+				}
+				else{
+					r_ncp += getNormalisedWidth(i, t.get(i));
+				}
+			}
 		}
-		r_ncp *= data.size();
 		ncp += r_ncp;
-//		ncp /= numberOfColumns;
-//		ncp /= data.size();
-//		ncp *= 100;
+		ncp /= numberOfColumns;
+		ncp /= data.size();
+		ncp *= 100;
 		perf.setNcp(ncp);
 
 		return perf;
@@ -190,17 +199,26 @@ public class TopDown {
 	//Postcondtion:	Return normalised width of passed in partition on dimension passed in
 	//Status:		Coded and efficient
 	//Written by:	Chris
-	private double getNormalisedWidth(int index){
+	private double getNormalisedWidth(int index, String input){
 		double width;
 		if(isNumerical[index]){
-			int lowBoundIndex = widths[index][0];
-			int highBoundIndex = widths[index][1];
-			width = attributeRanges.get(index).get(highBoundIndex) - attributeRanges.get(index).get(lowBoundIndex);
-			return width / (attributeRanges.get(index).get(attributeRanges.get(index).size()-1) - attributeRanges.get(index).get(0));
+			String[] nums = input.split("-");
+			double lowBound = Double.parseDouble(nums[0]);
+			double highBound = 0.0;
+			if(nums.length > 1){
+				highBound = Double.parseDouble(nums[1]);
+			}
+			else{
+				highBound = Double.parseDouble(nums[0]);
+			}
+			width = highBound - lowBound;
+			double d = attributeRanges.get(index).get(attributeRanges.get(index).size()-1) - attributeRanges.get(index).get(0);
+			return width / d;
 		}
 		else{
-			width = widths[index][0];
-			return width / (attributeRanges.get(index).get(attributeRanges.get(index).size()-1));
+			width = countLeafNodesRecursive(attributeTrees.get(index).getNode(input.toLowerCase().trim()));
+			double d = attributeRanges.get(index).get(attributeRanges.get(index).size()-1);
+			return width / d;
 		}
 	}
 

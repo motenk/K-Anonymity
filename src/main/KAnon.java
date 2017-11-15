@@ -151,7 +151,7 @@ public class KAnon
 			lineInput.useDelimiter(",");
 			while(lineInput.hasNext()) //Import file into data structure
 			{
-				tupleInput.add(lineInput.next());
+				tupleInput.add(lineInput.next().trim());
 			}
 			output.add(new Tuple(tupleInput, id));
 			id++;

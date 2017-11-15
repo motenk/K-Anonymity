@@ -1,9 +1,8 @@
 package datastructure;
 
-import table.Table;
 import table.Tuple;
-import taxonomy.TaxonomyTree;
 import taxonomy.TaxonomyNode;
+import taxonomy.TaxonomyTree;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -147,7 +146,7 @@ public class TaxonomyIndexedPartitions {
 			}
 			i++;
 		}
-		if(verbose) {
+		if(best != null && verbose) {
 			System.out.println("Best cut: " + j);
 			System.out.println("cuts: " + activeCuts.size());
 			System.out.println("attr: " + best.attribute);

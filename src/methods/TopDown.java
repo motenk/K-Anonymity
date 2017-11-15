@@ -69,19 +69,22 @@ public class TopDown {
 		Performance perf = new Performance();
 		boolean verbose = false;
 		int j =0;
-		while(tips.checkValidityAndBenefical(kValue, verbose)) {
-			if(verbose) {
-				System.out.println("------------------" + j++ + "------------------");
-				tips.print();
+		sad:
+		{
+			while (tips.checkValidityAndBenefical(kValue, verbose)) {
+				if (verbose) {
+					System.out.println("------------------" + j++ + "------------------");
+					tips.print();
+				}
+				//prints the active cuts.
+
+				Cut bestCut = tips.getBestCut(verbose);
+
+				if (bestCut == null) break sad;
+				tips.performCut(bestCut, isNumerical);
+				//System.out.println("cut performed");
+
 			}
-			//prints the active cuts.
-
-			Cut bestCut = tips.getBestCut(verbose);
-
-
-			tips.performCut(bestCut, isNumerical);
-			//System.out.println("cut performed");
-
 		}
 		//System.out.println("Algorithm done");
 		System.out.println("average k: " + tips.getAverageK());
@@ -218,10 +221,10 @@ public class TopDown {
 		ArrayList<Tuple> list1 = new ArrayList<Tuple>();
 		for(int i = 0; i < 6; i++) {
 			ArrayList<String> list = new ArrayList<String>();
-			list.add(column1[i]);
-			list.add(column2[i]);
-			list.add(column3[i]);
-			list.add(classes[i]);
+			list.add(column1[i].trim());
+			list.add(column2[i].trim());
+			list.add(column3[i].trim());
+			list.add(classes[i].trim());
 			list1.add(new Tuple(list, i, true));
 		}
 		Table t = new Table(list1);

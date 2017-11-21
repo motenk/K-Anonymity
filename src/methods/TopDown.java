@@ -30,7 +30,7 @@ public class TopDown {
 	public TopDown(ArrayList<Tuple> originalTable, int kValue, ArrayList<TaxonomyTree> trees) {
 		attributeTrees = trees;
 		data = originalTable;
-		numberOfColumns = data.get(0).size();
+		numberOfColumns = data.get(0).size()-1;
 		widths = new int[numberOfColumns][2];
 		attributeRanges = new ArrayList<ArrayList<Integer>>();
 

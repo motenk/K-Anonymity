@@ -119,6 +119,7 @@ public class KAnon
 			System.out.println(runTime);
 			runList.add(runTime);
 		}
+		filename = filename.replace(".csv", ".json");
 		outputFile(runList, method+"-sc"+scaleFactor+"-re"+repeatCount+"-k"+k+"-analysis_"+filename);
 	}
 

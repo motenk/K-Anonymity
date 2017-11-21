@@ -20,13 +20,13 @@ public class Analyze {
 
         KAnon kAnon = new KAnon();
 
-        int repeats = 2;
+        int repeats = 3;
 
         // k = 2^1 to 2^7
         for (int k_power = 1; k_power <= 7; k_power++) {
             int k = (int)Math.pow(2, k_power);
             System.out.println("\n\n\n** New k value of "+k);
-//            kAnon.runAnalysis("KAnon", dataValuesFilename, dataTaxFilename, k, repeats);
+            kAnon.runAnalysis("KAnon", dataValuesFilename, dataTaxFilename, k, repeats);
             kAnon.runAnalysis("TopDown", dataValuesFilename, dataTaxFilename, k, repeats);
         }
     }
